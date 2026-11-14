@@ -1,0 +1,28 @@
+{
+ "count": 31,
+ "page": 1,
+ "page_size": 5,
+ "results": [
+  {
+   "time": "2026-11-14T11:13:49Z",
+   "project": "玻璃瓶缺陷 Project #31",
+   "type": "task_earn",
+   "description": "任务 #10218 终审通过",
+   "points": 13
+  },
+  {
+   "time": "2026-11-13T18:22:10Z",
+   "project": "玻璃瓶缺陷 Project #31",
+   "type": "reject_penalty",
+   "description": "任务 #10223 一审打回（类别错）",
+   "points": -2
+  },
+  {
+   "time": "2026-11-13T16:40:02Z",
+   "project": "视频分类-暴力识别",
+   "type": "task_earn",
+   "description": "任务 #10201 终审通过",
+   "points": 13
+  }
+ ]
+}

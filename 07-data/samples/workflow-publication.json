@@ -1,0 +1,56 @@
+{
+ "mode": "production",
+ "is_published": true,
+ "published_at": "2026-11-14T05:53:56.948991+00:00",
+ "first": {
+  "at": "2026-11-14T05:53:56.948991+00:00",
+  "by": "刘成龙"
+ },
+ "last": {
+  "at": "2026-11-14T05:53:56.948991+00:00",
+  "by": "刘成龙"
+ },
+ "kpis": {
+  "published": true,
+  "published_at": "2026-11-14T05:53:56.948991+00:00",
+  "claimable": 22,
+  "claimed": 7,
+  "completed_instances": null
+ },
+ "checks": [
+  {
+   "key": "label_config",
+   "ok": true,
+   "count": 1,
+   "name": null,
+   "link": "/projects/218/settings/labeling"
+  },
+  {
+   "key": "data_imported",
+   "ok": true,
+   "count": 30,
+   "name": null,
+   "link": "/projects/218/imports"
+  },
+  {
+   "key": "tasks_created",
+   "ok": true,
+   "count": 30,
+   "pending": 22,
+   "name": null,
+   "link": null
+  },
+  {
+   "key": "members_ready",
+   "ok": true,
+   "count": 1,
+   "name": null,
+   "roles_set": true,
+   "missing_stages": [],
+   "link": "/projects/218/roles"
+  }
+ ],
+ "checks_done": 4,
+ "checks_total": 4,
+ "workspace_name": "测试空间"
+}

@@ -1,0 +1,378 @@
+[
+ {
+  "id": 1,
+  "name": "图像标注",
+  "parent": null,
+  "level": 1,
+  "is_builtin": true,
+  "dataset_count": 13
+ },
+ {
+  "id": 20,
+  "name": "文本标注",
+  "parent": null,
+  "level": 1,
+  "is_builtin": true,
+  "dataset_count": 8
+ },
+ {
+  "id": 28,
+  "name": "语音标注",
+  "parent": null,
+  "level": 1,
+  "is_builtin": true,
+  "dataset_count": 4
+ },
+ {
+  "id": 36,
+  "name": "对话式AI",
+  "parent": null,
+  "level": 1,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 39,
+  "name": "视频标注",
+  "parent": null,
+  "level": 1,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 69,
+  "name": "校园安全",
+  "parent": null,
+  "level": 1,
+  "is_builtin": true,
+  "dataset_count": 13
+ },
+ {
+  "id": 11,
+  "name": "2D拉框标注",
+  "parent": 1,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 2
+ },
+ {
+  "id": 70,
+  "name": "图像",
+  "parent": 69,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 4
+ },
+ {
+  "id": 37,
+  "name": "对话意图分类",
+  "parent": 36,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 21,
+  "name": "文本分类",
+  "parent": 20,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 4
+ },
+ {
+  "id": 40,
+  "name": "视频分类",
+  "parent": 39,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 29,
+  "name": "语音识别",
+  "parent": 28,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 2
+ },
+ {
+  "id": 22,
+  "name": "命名实体识别",
+  "parent": 20,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 38,
+  "name": "对话响应生成",
+  "parent": 36,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 71,
+  "name": "视频",
+  "parent": 69,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 4
+ },
+ {
+  "id": 41,
+  "name": "视频帧分类",
+  "parent": 39,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 12,
+  "name": "语义分割",
+  "parent": 1,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 30,
+  "name": "语音意图分类",
+  "parent": 28,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 23,
+  "name": "关系抽取",
+  "parent": 20,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 13,
+  "name": "实例分割",
+  "parent": 1,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 31,
+  "name": "语音情感识别",
+  "parent": 28,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 72,
+  "name": "音频",
+  "parent": 69,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 3
+ },
+ {
+  "id": 14,
+  "name": "关键点检测",
+  "parent": 1,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 2
+ },
+ {
+  "id": 24,
+  "name": "内容摘要",
+  "parent": 20,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 32,
+  "name": "声音事件识别",
+  "parent": 28,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 73,
+  "name": "文本",
+  "parent": 69,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 2
+ },
+ {
+  "id": 25,
+  "name": "内容问答",
+  "parent": 20,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 15,
+  "name": "图像描述",
+  "parent": 1,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 33,
+  "name": "说话者语音分割",
+  "parent": 28,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 34,
+  "name": "分段语音识别",
+  "parent": 28,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 26,
+  "name": "文本内容审核",
+  "parent": 20,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 16,
+  "name": "文档注释",
+  "parent": 1,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 35,
+  "name": "信号质量检测",
+  "parent": 28,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 27,
+  "name": "文本翻译",
+  "parent": 20,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 17,
+  "name": "视觉问答",
+  "parent": 1,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 18,
+  "name": "医学影像分类",
+  "parent": 1,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 19,
+  "name": "OCR识别",
+  "parent": 1,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 4
+ },
+ {
+  "id": 42,
+  "name": "图像分类",
+  "parent": 1,
+  "level": 2,
+  "is_builtin": true,
+  "dataset_count": 2
+ },
+ {
+  "id": 74,
+  "name": "安防监控",
+  "parent": 70,
+  "level": 3,
+  "is_builtin": true,
+  "dataset_count": 4
+ },
+ {
+  "id": 76,
+  "name": "安防监控",
+  "parent": 71,
+  "level": 3,
+  "is_builtin": true,
+  "dataset_count": 3
+ },
+ {
+  "id": 80,
+  "name": "实训安全",
+  "parent": 73,
+  "level": 3,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 77,
+  "name": "心理安全",
+  "parent": 72,
+  "level": 3,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 81,
+  "name": "公共卫生",
+  "parent": 73,
+  "level": 3,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 75,
+  "name": "消防安全",
+  "parent": 70,
+  "level": 3,
+  "is_builtin": true,
+  "dataset_count": 0
+ },
+ {
+  "id": 82,
+  "name": "课堂教学",
+  "parent": 71,
+  "level": 3,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 78,
+  "name": "食品安全",
+  "parent": 72,
+  "level": 3,
+  "is_builtin": true,
+  "dataset_count": 1
+ },
+ {
+  "id": 79,
+  "name": "校园交通",
+  "parent": 72,
+  "level": 3,
+  "is_builtin": true,
+  "dataset_count": 1
+ }
+]

@@ -1,0 +1,27 @@
+{
+ "id": 218,
+ "title": "玻璃缺陷检测Project #32",
+ "project_mode": "production",
+ "is_published": true,
+ "maximum_annotations": 1,
+ "sampling": "Sequential sampling",
+ "task_number": 30,
+ "num_tasks_with_annotations": 1,
+ "total_annotations_number": 1,
+ "total_predictions_number": 0,
+ "pipeline": {
+  "unclaimed": 22,
+  "annotating": 7,
+  "pending_review": 1,
+  "pending_validation": 0,
+  "passed": 0,
+  "rejected": 0,
+  "total": 30,
+  "in_flight": 1
+ },
+ "label_config": "<View>\n  <Image name=\"image\" value=\"$image\"/>\n  <RectangleLabels name=\"label\" toName=\"image\">\n    \n    \n  <Label value=\"defect\" background=\"#FFA39E\"/></RectangleLabels>\n</View>",
+ "show_instruction": false,
+ "enable_empty_annotation": true,
+ "show_skip_button": true,
+ "annotator_evaluation_enabled": false
+}

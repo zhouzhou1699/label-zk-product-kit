@@ -1,0 +1,128 @@
+/* ==========================================================================
+   Label ZK · Design Tokens v2
+   一套 token，两个主题。用法：<html data-theme="light"> / "dark"
+   ========================================================================== */
+
+:root {
+  /* ---------- Brand ---------- */
+  --brand-primary: #2B91F8;
+  --brand-primary-hover: #2474EA;
+  --brand-primary-active: #1B5FCB;
+  --brand-primary-subtle: #E8F2FE;
+  --brand-on-primary: #FFFFFF;
+  --brand-gradient: linear-gradient(135deg, #2B91F8 0%, #5CB8FF 100%);
+
+  /* ---------- Neutral ---------- */
+  --bg-app: #F3F8FF;
+  --bg-surface: #FFFFFF;
+  --bg-surface-2: #F7FAFF;
+  --bg-inset: #EEF4FD;
+  --bg-dark: #0B2039;
+  --border: #E3ECF7;
+  --border-strong: #CBD8E8;
+  --text-primary: #16233A;
+  --text-secondary: #5A6B82;
+  --text-tertiary: #8C9BB0;
+  --text-inverse: #FFFFFF;
+
+  /* ---------- Semantic ---------- */
+  --success: #1FA971;   --success-bg: #E7F7F0;
+  --info: #2B91F8;      --info-bg: #E8F2FE;
+  --warning: #E8A13A;   --warning-bg: #FDF4E5;
+  --danger: #E5544B;    --danger-bg: #FDECEB;
+  --neutral: #8C9BB0;   --neutral-bg: #F0F4FA;
+
+  /* ---------- Task states (唯一映射，不得扩展) ---------- */
+  --state-unclaimed: #8C9BB0;          --state-unclaimed-bg: #F0F4FA;
+  --state-working: #2B91F8;            --state-working-bg: #E8F2FE;
+  --state-drafting: #E8A13A;           --state-drafting-bg: #FDF4E5;
+  --state-pending-review: #7C5CE0;     --state-pending-review-bg: #F1EDFD;
+  --state-pending-validation: #2AA5A0; --state-pending-validation-bg: #E5F6F5;
+  --state-passed: #1FA971;             --state-passed-bg: #E7F7F0;
+  --state-rejected: #E5544B;           --state-rejected-bg: #FDECEB;
+
+  /* ---------- Category (charts / dataset taxonomy) ---------- */
+  --cat-1: #3271E2;  /* blueberry · 图像 */
+  --cat-2: #34988C;  /* kale · 文本 */
+  --cat-3: #E69559;  /* canteloupe · 语音 */
+  --cat-4: #9F6CC6;  /* fig · 对话 */
+  --cat-5: #7FB54A;  /* kiwi · 视频 */
+  --cat-6: #D9614C;  /* persimmon · 行业 */
+
+  /* ---------- Typography ---------- */
+  --font-sans: "Figtree", "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", Monaco, "SFMono-Regular", monospace;
+
+  --fs-display: 40px; --lh-display: 44px;
+  --fs-h1: 26px;      --lh-h1: 34px;
+  --fs-h2: 20px;      --lh-h2: 28px;
+  --fs-h3: 16px;      --lh-h3: 24px;
+  --fs-body: 14px;    --lh-body: 22px;
+  --fs-sm: 13px;      --lh-sm: 20px;
+  --fs-xs: 12px;      --lh-xs: 18px;
+  --fs-mono: 13px;
+
+  /* ---------- Spacing ---------- */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+
+  /* ---------- Radius ---------- */
+  --radius-sm: 6px; --radius-md: 8px; --radius-lg: 10px; --radius-pill: 999px;
+
+  /* ---------- Shadow ---------- */
+  --shadow-1: 0 1px 2px rgba(22,35,58,.06);
+  --shadow-2: 0 6px 24px rgba(22,35,58,.10);
+  --shadow-focus: 0 0 0 3px rgba(43,145,248,.28);
+
+  /* ---------- Layout ---------- */
+  --sidebar-w: 216px;
+  --topbar-h: 56px;
+  --content-max: 1440px;
+  --ease: cubic-bezier(.2,.8,.2,1);
+  --dur: 180ms;
+}
+
+/* =========================== Dark (大屏) =========================== */
+:root[data-theme="dark"] {
+  --bg-app: #0B2039;
+  --bg-surface: rgba(255,255,255,.04);
+  --bg-surface-2: rgba(255,255,255,.06);
+  --bg-inset: rgba(255,255,255,.03);
+  --border: rgba(255,255,255,.10);
+  --border-strong: rgba(255,255,255,.18);
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255,255,255,.65);
+  --text-tertiary: rgba(255,255,255,.45);
+  --brand-primary: #5CB8FF;
+  --brand-primary-subtle: rgba(92,184,255,.14);
+  --success-bg: rgba(31,169,113,.16);
+  --info-bg: rgba(43,145,248,.16);
+  --warning-bg: rgba(232,161,58,.16);
+  --danger-bg: rgba(229,84,75,.16);
+  --neutral-bg: rgba(255,255,255,.08);
+  --shadow-1: 0 1px 2px rgba(0,0,0,.30);
+  --shadow-2: 0 8px 32px rgba(0,0,0,.40);
+  --accent-number: linear-gradient(135deg, #5CB8FF 0%, #7CF0C5 100%);
+}
+
+/* =========================== Base =========================== */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-primary);
+  background: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+}
+
+.num { font-variant-numeric: tabular-nums; }
+.mono { font-family: var(--font-mono); font-size: var(--fs-mono); }
+
+:focus-visible { outline: none; box-shadow: var(--shadow-focus); border-radius: var(--radius-sm); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

@@ -1,0 +1,30 @@
+{
+ "release": "1.24.0.dev0",
+ "label-studio-os-package": {
+  "version": "1.24.0.dev0",
+  "short_version": "1.24",
+  "latest_version_from_pypi": null,
+  "latest_version_upload_time": null,
+  "current_version_is_outdated": false
+ },
+ "label-studio-os-backend": {
+  "message": "实拍图",
+  "commit": "5204dc55f44a4103872f40cff47edd440ebd3cc6",
+  "date": "2026/11/14 13:34:30",
+  "branch": "dev",
+  "version": "5204dc5+dirty"
+ },
+ "label-studio-converter": {
+  "version": "2.1.3"
+ },
+ "edition": "Community",
+ "lsf": {
+  "commit": "5204dc"
+ },
+ "dm2": {
+  "commit": "5204dc"
+ },
+ "backend": {
+  "commit": "5204dc"
+ }
+}

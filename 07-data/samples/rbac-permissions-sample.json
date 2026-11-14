@@ -1,0 +1,119 @@
+{
+ "count": 107,
+ "categories": [
+  {
+   "category": "actions",
+   "permissions": [
+    {
+     "code": "actions.perform",
+     "category": "actions",
+     "description": "Run Data Manager batch actions on tasks",
+     "is_deprecated": false,
+     "held_by_me": true
+    }
+   ]
+  },
+  {
+   "category": "annotations",
+   "permissions": [
+    {
+     "code": "annotations.change",
+     "category": "annotations",
+     "description": "Change annotations",
+     "is_deprecated": false,
+     "held_by_me": true
+    },
+    {
+     "code": "annotations.create",
+     "category": "annotations",
+     "description": "Create annotations",
+     "is_deprecated": false,
+     "held_by_me": true
+    },
+    {
+     "code": "annotations.delete",
+     "category": "annotations",
+     "description": "Delete annotations",
+     "is_deprecated": false,
+     "held_by_me": true
+    }
+   ]
+  },
+  {
+   "category": "audit",
+   "permissions": [
+    {
+     "code": "audit.view",
+     "category": "audit",
+     "description": "Read the audit trail of the current scope",
+     "is_deprecated": false,
+     "held_by_me": true
+    }
+   ]
+  },
+  {
+   "category": "avatar",
+   "permissions": [
+    {
+     "code": "avatar.any",
+     "category": "avatar",
+     "description": "Upload and read user avatars",
+     "is_deprecated": false,
+     "held_by_me": true
+    }
+   ]
+  },
+  {
+   "category": "cloud_drive",
+   "permissions": [
+    {
+     "code": "cloud_drive.change",
+     "category": "cloud_drive",
+     "description": "Rename and move cloud drive entries",
+     "is_deprecated": false,
+     "held_by_me": true
+    },
+    {
+     "code": "cloud_drive.delete",
+     "category": "cloud_drive",
+     "description": "Delete cloud drive entries",
+     "is_deprecated": false,
+     "held_by_me": true
+    },
+    {
+     "code": "cloud_drive.download",
+     "category": "cloud_drive",
+     "description": "Download cloud drive files",
+     "is_deprecated": false,
+     "held_by_me": true
+    }
+   ]
+  },
+  {
+   "category": "datasets",
+   "permissions": [
+    {
+     "code": "datasets.change",
+     "category": "datasets",
+     "description": "Update datasets",
+     "is_deprecated": false,
+     "held_by_me": true
+    },
+    {
+     "code": "datasets.create",
+     "category": "datasets",
+     "description": "Create datasets",
+     "is_deprecated": false,
+     "held_by_me": true
+    },
+    {
+     "code": "datasets.delete",
+     "category": "datasets",
+     "description": "Delete datasets",
+     "is_deprecated": false,
+     "held_by_me": true
+    }
+   ]
+  }
+ ]
+}

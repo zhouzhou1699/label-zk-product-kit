@@ -1,0 +1,38 @@
+{
+ "_note": "登录拼图挑战响应结构（图片 base64 已截断）。注意 ticket 的第一段 base64 解码即得 offset —— 这是 P0 安全缺陷的证据。",
+ "ticket": "<opaque-ticket-id>:<timestamp>:<signature>",
+ "background": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAoHCAkIBgoJCAkMCwoMDxoRD...(JPEG base64)",
+ "piece": "data:image/webp;base64,UklGRlIHAABXRUJQVlA4WAoAAAAQAAAAWwAAWwAAQUxQSA4CAAABkG3bV...(WebP base64)",
+ "track": {
+  "width": 320,
+  "height": 104
+ },
+ "piece_box": {
+  "width": 46,
+  "height": 46,
+  "top": 29.0
+ },
+ "tolerance": 10,
+ "_ticket_payload_decoded": {
+  "offset": 260,
+  "purpose": "login",
+  "picture": "slide-03",
+  "seed": "<redacted>",
+  "nonce": "<redacted>"
+ },
+ "verify_request": {
+  "ticket": "<opaque>",
+  "position": 260
+ },
+ "verify_response_ok": {
+  "ok": true,
+  "token": "<one-time token>",
+  "offset": 260
+ },
+ "verify_response_fail": {
+  "ok": false,
+  "code": "captcha_invalid",
+  "detail": "拼图未对准缺口，请重试。",
+  "challenge": "<new challenge>"
+ }
+}

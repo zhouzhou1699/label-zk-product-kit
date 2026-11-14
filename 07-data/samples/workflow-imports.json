@@ -1,0 +1,30 @@
+{
+ "summary": {
+  "batches": 1,
+  "files": 30,
+  "tasks": 30,
+  "last_at": "2026-11-14T05:50:59.648636+00:00",
+  "formats": [
+   ".jpg"
+  ]
+ },
+ "batches": [
+  {
+   "id": 217,
+   "at": "2026-11-14T05:50:59.648636+00:00",
+   "status": "completed",
+   "source": {
+    "kind": "dataset",
+    "name": "玻璃瓶缺陷检测"
+   },
+   "files": 30,
+   "tasks": 30,
+   "formats": [
+    ".jpg"
+   ]
+  }
+ ],
+ "page": 1,
+ "page_size": 20,
+ "total": 1
+}

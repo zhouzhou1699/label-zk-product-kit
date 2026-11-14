@@ -1,0 +1,37 @@
+{
+ "all_ok": true,
+ "items": [
+  {
+   "key": "label_config",
+   "ok": true,
+   "count": 1,
+   "name": null,
+   "link": "/projects/218/settings/labeling"
+  },
+  {
+   "key": "data_imported",
+   "ok": true,
+   "count": 30,
+   "name": null,
+   "link": "/projects/218/imports"
+  },
+  {
+   "key": "in_workspace",
+   "ok": true,
+   "count": null,
+   "name": "测试空间",
+   "link": null
+  },
+  {
+   "key": "workspace_members",
+   "ok": true,
+   "count": 1,
+   "name": null,
+   "link": null
+  }
+ ],
+ "workspace": {
+  "id": 44,
+  "title": "测试空间"
+ }
+}

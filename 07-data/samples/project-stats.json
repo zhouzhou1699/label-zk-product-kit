@@ -1,0 +1,29 @@
+{
+ "projects": {
+  "total": 47,
+  "team": 47,
+  "personal": 0,
+  "ungrouped": 0,
+  "published": 45,
+  "unpublished": 2
+ },
+ "modes": {
+  "production": 41,
+  "training": 6
+ },
+ "tasks": {
+  "total": 2503,
+  "finished": 899,
+  "pending": 1604
+ },
+ "pipeline": {
+  "unclaimed": 1279,
+  "annotating": 800,
+  "pending_review": 21,
+  "pending_validation": 2,
+  "passed": 31,
+  "rejected": 4,
+  "total": 2137,
+  "in_flight": 23
+ }
+}

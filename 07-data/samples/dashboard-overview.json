@@ -1,0 +1,131 @@
+{
+ "generated_at": "2026-11-14T07:56:28.553793+00:00",
+ "totals": {
+  "institutions": 8,
+  "organizations": 24,
+  "workspaces": 269,
+  "projects": 95,
+  "tasks": 4825,
+  "annotations": 1148,
+  "users": 198,
+  "datasets": 67
+ },
+ "today": {
+  "users": 105,
+  "projects": 2,
+  "tasks": 60,
+  "organizations": 0
+ },
+ "trend": {
+  "daily": [
+   {
+    "date": "2026-11-08",
+    "users": 0,
+    "projects": 1,
+    "tasks": 40,
+    "organizations": 0,
+    "annotations": 0
+   },
+   {
+    "date": "2026-11-09",
+    "users": 3,
+    "projects": 22,
+    "tasks": 1289,
+    "organizations": 1,
+    "annotations": 41
+   },
+   {
+    "date": "2026-11-10",
+    "users": 0,
+    "projects": 3,
+    "tasks": 180,
+    "organizations": 0,
+    "annotations": 23
+   }
+  ],
+  "monthly": [
+   {
+    "month": "2026-09",
+    "users": 0,
+    "projects": 0,
+    "tasks": 0,
+    "organizations": 0,
+    "annotations": 0
+   },
+   {
+    "month": "2026-10",
+    "users": 0,
+    "projects": 0,
+    "tasks": 0,
+    "organizations": 0,
+    "annotations": 0
+   },
+   {
+    "month": "2026-11",
+    "users": 296,
+    "projects": 95,
+    "tasks": 4825,
+    "organizations": 24,
+    "annotations": 1148
+   }
+  ]
+ },
+ "delivery": {
+  "total": 4406,
+  "passed": 172,
+  "pending_review": 46,
+  "pending_validation": 22,
+  "rejected": 9,
+  "in_progress": 1010,
+  "unclaimed": 3147,
+  "rate": 3.9
+ },
+ "project_modes": {
+  "production": 78,
+  "training": 17,
+  "other": 0
+ },
+ "datasets": {
+  "builtin": 40,
+  "local": 27,
+  "total": 67
+ },
+ "top_teams": [
+  {
+   "id": 1,
+   "title": "刘成龙的团队",
+   "projects": 47,
+   "tasks": 2503
+  },
+  {
+   "id": 22,
+   "title": "Ultraman Teo的团队",
+   "projects": 10,
+   "tasks": 732
+  },
+  {
+   "id": 13,
+   "title": "擎天柱",
+   "projects": 13,
+   "tasks": 681
+  },
+  {
+   "id": 2,
+   "title": "舟舟一号的团队",
+   "projects": 12,
+   "tasks": 441
+  },
+  {
+   "id": 12,
+   "title": "测试舟舟二号",
+   "projects": 2,
+   "tasks": 232
+  },
+  {
+   "id": 10,
+   "title": "霸天虎",
+   "projects": 4,
+   "tasks": 147
+  }
+ ]
+}

@@ -1,0 +1,65 @@
+{
+ "count": 10,
+ "results": [
+  {
+   "code": "SYS_ADMIN",
+   "name": "System Administrator",
+   "level": null,
+   "permission_count": 10
+  },
+  {
+   "code": "CY",
+   "name": "测试",
+   "level": null,
+   "permission_count": 0
+  },
+  {
+   "code": "INST_ADMIN",
+   "name": "Institution Administrator",
+   "level": null,
+   "permission_count": 64
+  },
+  {
+   "code": "OW",
+   "name": "Owner",
+   "level": null,
+   "permission_count": 75
+  },
+  {
+   "code": "AD",
+   "name": "Admin",
+   "level": null,
+   "permission_count": 75
+  },
+  {
+   "code": "WS_ADMIN",
+   "name": "Workspace Administrator",
+   "level": null,
+   "permission_count": 49
+  },
+  {
+   "code": "PR_VALIDATOR",
+   "name": "Project Validator",
+   "level": null,
+   "permission_count": 13
+  },
+  {
+   "code": "PR_REVIEWER",
+   "name": "Project Reviewer",
+   "level": null,
+   "permission_count": 12
+  },
+  {
+   "code": "WS_MEMBER",
+   "name": "Workspace Member",
+   "level": null,
+   "permission_count": 26
+  },
+  {
+   "code": "PR_ANNOTATOR",
+   "name": "Project Annotator",
+   "level": null,
+   "permission_count": 13
+  }
+ ]
+}

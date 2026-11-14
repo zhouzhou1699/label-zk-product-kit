@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Label ZK v2 · 高保真原型</title>
+<link rel="stylesheet" href="../03-design/tokens.css">
+<style>
+/* ============ Layout shell ============ */
+body { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-w); flex: 0 0 var(--sidebar-w);
+  background: var(--bg-surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh;
+}
+.brand { height: var(--topbar-h); display: flex; align-items: center; gap: 8px; padding: 0 16px; border-bottom: 1px solid var(--border); }
+.brand-logo { width: 26px; height: 26px; border-radius: 7px; background: var(--brand-gradient); display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 13px; }
+.brand-name { font-weight: 700; font-size: 15px; letter-spacing: .2px; }
+.nav { padding: 12px 8px; overflow-y: auto; flex: 1; }
+.nav-group { margin-bottom: 14px; }
+.nav-label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); letter-spacing: .08em; padding: 0 10px 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-md);
+  color: var(--text-secondary); text-decoration: none; font-size: 13.5px; cursor: pointer;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+.nav-item:hover { background: var(--bg-surface-2); color: var(--text-primary); }
+.nav-item.active { background: var(--brand-primary-subtle); color: var(--brand-primary); font-weight: 600; }
+.nav-item .ico { width: 16px; text-align: center; opacity: .85; }
+.nav-item .badge { margin-left: auto; font-size: 11px; background: var(--danger-bg); color: var(--danger); padding: 1px 6px; border-radius: var(--radius-pill); font-weight: 600; }
+.nav-sep { height: 1px; background: var(--border); margin: 8px 10px 14px; }
+
+/* Main */
+.main { flex: 1; min-width: 0; }
+.topbar {
+  height: var(--topbar-h); background: var(--bg-surface); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px; padding: 0 20px; position: sticky; top: 0; z-index: 20;
+}
+.crumb { font-size: 13px; color: var(--text-secondary); display: flex; gap: 6px; align-items: center; }
+.crumb b { color: var(--text-primary); font-weight: 600; }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+.avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--brand-gradient); color: #fff; display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+.content { padding: 22px 24px 40px; max-width: var(--content-max); }
+
+/* ============ Page header ============ */
+.page-head { margin-bottom: 18px; }
+.page-eyebrow { font-size: 12px; color: var(--text-tertiary); margin-bottom: 4px; }
+.page-title { font-size: var(--fs-h1); line-height: var(--lh-h1); font-weight: 700; margin: 0 0 6px; letter-spacing: -.2px; }
+.page-desc { font-size: var(--fs-sm); color: var(--text-secondary); max-width: 760px; }
+.page-head-row { display: flex; align-items: flex-start; gap: 16px; }
+.page-head-row .actions { margin-left: auto; display: flex; gap: 8px; }
+
+/* ============ Buttons ============ */
+.btn {
+  height: 36px; padding: 0 14px; border-radius: var(--radius-lg); border: 1px solid var(--border-strong);
+  background: var(--bg-surface); color: var(--text-primary); font-size: 13px; font-family: inherit;
+  cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;
+  transition: all var(--dur) var(--ease);
+}
+.btn:hover { border-color: var(--brand-primary); color: var(--brand-primary); }
+.btn-primary { background: var(--brand-gradient); border-color: transparent; color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(43,145,248,.28); }
+.btn-primary:hover { color: #fff; filter: brightness(1.04); }
+.btn-ghost { border-color: transparent; background: transparent; color: var(--text-secondary); }
+.btn-ghost:hover { background: var(--bg-surface-2); color: var(--brand-primary); }
+.btn-sm { height: 30px; padding: 0 10px; font-size: 12.5px; }
+.btn:disabled { background: var(--bg-inset); border-color: var(--border); color: var(--text-tertiary); cursor: not-allowed; }
+
+/* ============ Card ============ */
+.card { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-1); }
+.card-pad { padding: var(--sp-4); }
+.card-head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.card-title { font-size: var(--fs-h3); font-weight: 600; }
+.card-sub { font-size: var(--fs-xs); color: var(--text-tertiary); margin-left: auto; }
+
+/* ============ Stat card ============ */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+.stat { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px 16px; box-shadow: var(--shadow-1); }
+.stat-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.stat-label { font-size: var(--fs-xs); color: var(--text-secondary); font-weight: 500; }
+.scope {
+  margin-left: auto; font-size: 10.5px; padding: 1px 7px; border-radius: var(--radius-pill);
+  background: var(--brand-primary-subtle); color: var(--brand-primary); font-weight: 600; letter-spacing: .02em;
+}
+.scope[data-scope="PLATFORM"] { background: #F1EDFD; color: var(--state-pending-review); }
+.scope[data-scope="INSTITUTION"] { background: var(--warning-bg); color: var(--warning); }
+.stat-num { font-size: 26px; line-height: 32px; font-weight: 700; letter-spacing: -.5px; }
+.stat-num small { font-size: 13px; font-weight: 500; color: var(--text-tertiary); margin-left: 4px; letter-spacing: 0; }
+.stat-sub { font-size: var(--fs-xs); color: var(--text-tertiary); margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap; }
+.stat-sub b { color: var(--text-secondary); font-weight: 600; }
+
+/* ============ Segmented ============ */
+.seg { display: inline-flex; background: var(--bg-inset); border-radius: var(--radius-lg); padding: 3px; gap: 2px; }
+.seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 8px; font-size: 12.5px; font-family: inherit; color: var(--text-secondary); cursor: pointer; }
+.seg button.on { background: var(--bg-surface); color: var(--brand-primary); font-weight: 600; box-shadow: var(--shadow-1); }
+
+/* ============ Pills ============ */
+.pill { display: inline-flex; align-items: center; gap: 5px; height: 22px; padding: 0 9px; border-radius: var(--radius-pill); font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.pill[data-s="unclaimed"] { color: var(--state-unclaimed); background: var(--state-unclaimed-bg); }
+.pill[data-s="working"] { color: var(--state-working); background: var(--state-working-bg); }
+.pill[data-s="drafting"] { color: var(--state-drafting); background: var(--state-drafting-bg); }
+.pill[data-s="pending_review"] { color: var(--state-pending-review); background: var(--state-pending-review-bg); }
+.pill[data-s="pending_validation"] { color: var(--state-pending-validation); background: var(--state-pending-validation-bg); }
+.pill[data-s="passed"] { color: var(--state-passed); background: var(--state-passed-bg); }
+.pill[data-s="rejected"] { color: var(--state-rejected); background: var(--state-rejected-bg); }
+
+/* ============ Progress ============ */
+.progress { height: 6px; border-radius: var(--radius-pill); background: var(--bg-inset); overflow: hidden; display: flex; }
+.progress i { display: block; height: 100%; }
+.p-passed { background: var(--success); }
+.p-flight { background: var(--brand-primary); }
+.p-remain { background: var(--border-strong); }
+
+/* ============ Table ============ */
+table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); }
+thead th { text-align: left; font-size: 11.5px; font-weight: 600; color: var(--text-tertiary); background: var(--bg-surface-2); padding: 9px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+tbody td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--text-primary); vertical-align: middle; }
+tbody tr:hover { background: var(--bg-surface-2); }
+tbody tr.flag { box-shadow: inset 3px 0 0 var(--warning); }
+.t-id { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-primary); }
+.muted { color: var(--text-tertiary); }
+.thumb { width: 34px; height: 26px; border-radius: 4px; background: linear-gradient(135deg,#BBD9F5,#E8F2FE); border: 1px solid var(--border); }
+
+/* ============ Project card ============ */
+.pgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.pcard { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px; box-shadow: var(--shadow-1); transition: all var(--dur) var(--ease); cursor: pointer; }
+.pcard:hover { border-color: var(--brand-primary); box-shadow: var(--shadow-2); transform: translateY(-1px); }
+.pcard-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.pcard-name { font-size: 13.5px; font-weight: 600; line-height: 19px; }
+.pcard-ico { width: 26px; height: 26px; border-radius: 6px; background: var(--brand-primary-subtle); display: grid; place-items: center; font-size: 13px; }
+.pcard-rate { display: flex; align-items: baseline; gap: 6px; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.pcard-rate b { font-size: 17px; color: var(--text-primary); font-weight: 700; }
+.pcard-states { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 10px; font-size: 11.5px; color: var(--text-secondary); }
+.pcard-states b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.pcard-foot { display: flex; align-items: center; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border); font-size: 11px; color: var(--text-tertiary); }
+.avatar-xs { width: 18px; height: 18px; border-radius: 50%; background: var(--brand-gradient); color: #fff; display: grid; place-items: center; font-size: 9px; font-weight: 700; }
+
+/* ============ Annotate layout ============ */
+.anno { display: grid; grid-template-columns: 168px 1fr 260px; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden; background: var(--bg-surface); box-shadow: var(--shadow-1); height: 560px; }
+.anno-list { border-right: 1px solid var(--border); overflow-y: auto; background: var(--bg-surface-2); }
+.anno-task { display: flex; gap: 8px; align-items: center; padding: 7px 9px; font-size: 12px; cursor: pointer; border-left: 3px solid transparent; }
+.anno-task:hover { background: var(--bg-surface); }
+.anno-task.on { background: var(--bg-surface); border-left-color: var(--brand-primary); font-weight: 600; }
+.anno-canvas { background: #EDF3FA; display: grid; place-items: center; position: relative; }
+.bottle { width: 402px; height: 304px; border-radius: 8px; position: relative; }
+.bottle img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block; }
+.bbox { position: absolute; border: 2px solid #FF6B6B; border-radius: 2px; }
+.bbox span { position: absolute; top: -19px; left: -2px; background: #FF6B6B; color: #fff; font-size: 10px; padding: 1px 5px; border-radius: 3px; font-weight: 600; }
+.tools { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-1); display: flex; flex-direction: column; padding: 4px; gap: 2px; }
+.tools i { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 6px; font-size: 13px; font-style: normal; color: var(--text-secondary); cursor: pointer; }
+.tools i.on { background: var(--brand-primary-subtle); color: var(--brand-primary); }
+.anno-bar { position: absolute; left: 0; right: 0; bottom: 0; background: var(--bg-surface); border-top: 1px solid var(--border); padding: 8px 10px; display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.labels { position: absolute; left: 10px; bottom: 52px; display: flex; gap: 6px; }
+.label-chip { background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 3px 8px; font-size: 11.5px; box-shadow: var(--shadow-1); }
+.label-chip b { color: var(--danger); margin-right: 5px; }
+.anno-panel { border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+.anno-tabs { display: flex; border-bottom: 1px solid var(--border); font-size: 12px; }
+.anno-tabs div { padding: 9px 12px; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; }
+.anno-tabs div.on { color: var(--brand-primary); border-bottom-color: var(--brand-primary); font-weight: 600; }
+.anno-body { padding: 14px; font-size: 12.5px; color: var(--text-secondary); overflow-y: auto; flex: 1; }
+.kv { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 12px; }
+.kv b { color: var(--text-primary); font-weight: 600; }
+
+/* ============ Dark dashboard ============ */
+.dark-wrap { background: var(--bg-dark); border-radius: var(--radius-lg); padding: 20px; color: #fff; }
+.dark-wrap .kpi { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.10); border-radius: var(--radius-md); padding: 14px; }
+.kpis { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-bottom: 14px; }
+.kpi-label { font-size: 11.5px; color: rgba(255,255,255,.6); margin-bottom: 6px; }
+.kpi-num { font-size: 24px; font-weight: 700; letter-spacing: -.5px; background: linear-gradient(135deg,#5CB8FF,#7CF0C5); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.kpi-today { font-size: 10.5px; color: #7CF0C5; margin-top: 4px; }
+.dark-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 12px; }
+.legend { display: flex; gap: 12px; font-size: 11px; color: rgba(255,255,255,.6); }
+.legend i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; margin-right: 5px; }
+.donut { width: 140px; height: 140px; border-radius: 50%; display: grid; place-items: center; margin: 0 auto;
+  background: conic-gradient(#1FA971 0 3.9%, #E8A13A 3.9% 5.4%, #E5544B 5.4% 5.6%, #2B91F8 5.6% 100%); }
+.donut-in { width: 104px; height: 104px; border-radius: 50%; background: #0B2039; display: grid; place-items: center; text-align: center; }
+.donut-in b { font-size: 20px; }
+
+/* ============ Capacity (new page) ============ */
+.funnel { display: flex; gap: 8px; margin-bottom: 16px; }
+.funnel-step { flex: 1; background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px; position: relative; }
+.funnel-step.bottleneck { border-color: var(--warning); box-shadow: 0 0 0 3px var(--warning-bg); }
+.funnel-step .fs-label { font-size: 11.5px; color: var(--text-secondary); }
+.funnel-step .fs-num { font-size: 22px; font-weight: 700; margin: 4px 0; }
+.funnel-step .fs-dwell { font-size: 11px; color: var(--text-tertiary); }
+.alert { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: var(--radius-md); font-size: 13px; margin-bottom: 14px; }
+.alert.warning { background: var(--warning-bg); color: #8A5D14; border: 1px solid #F3DDB6; }
+.alert.info { background: var(--brand-primary-subtle); color: #14568F; border: 1px solid #C9E2FB; }
+.alert b { font-weight: 700; }
+
+/* misc */
+.row { display: flex; gap: 12px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.screen { display: none; }
+.screen.on { display: block; animation: fade .2s var(--ease); }
+@keyframes fade { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: none; } }
+.note { font-size: 12px; color: var(--text-secondary); background: var(--bg-surface-2); border: 1px dashed var(--border-strong); border-radius: var(--radius-md); padding: 10px 12px; margin-top: 14px; }
+.note b { color: var(--brand-primary); }
+.chip-line { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { font-size: 11px; padding: 2px 8px; border-radius: var(--radius-pill); background: var(--bg-inset); color: var(--text-secondary); }
+.kbd { font-family: var(--font-mono); font-size: 11px; background: var(--bg-inset); border: 1px solid var(--border-strong); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
+.price-big { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+.mini-bars { display: flex; align-items: flex-end; gap: 3px; height: 28px; }
+.mini-bars i { width: 6px; background: var(--brand-primary); border-radius: 2px 2px 0 0; opacity: .75; }
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.tabs div { padding: 9px 14px; font-size: 13px; color: var(--text-secondary); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs div.on { color: var(--brand-primary); border-bottom-color: var(--brand-primary); font-weight: 600; }
+.tabs .step-done { color: var(--success); }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+.dotc { width: 8px; height: 8px; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- ================= Sidebar ================= -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-logo">ZK</div>
+    <div class="brand-name">Label ZK</div>
+    <span class="tag" style="margin-left:auto;font-size:10px">v2</span>
+  </div>
+  <nav class="nav">
+    <div class="nav-group">
+      <div class="nav-label">工作台</div>
+      <a class="nav-item" data-go="home"><span class="ico">◉</span>首页</a>
+      <a class="nav-item" data-go="capacity"><span class="ico">◈</span>产能看板<span class="badge">新</span></a>
+    </div>
+    <div class="nav-sep"></div>
+    <div class="nav-group">
+      <div class="nav-label">数据生产</div>
+      <a class="nav-item" data-go="projects"><span class="ico">▤</span>项目</a>
+      <a class="nav-item"><span class="ico">◇</span>训练集</a>
+      <a class="nav-item"><span class="ico">◫</span>数据集</a>
+      <a class="nav-item"><span class="ico">▧</span>证书中心</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">标注奖励</div>
+      <a class="nav-item" data-go="rewards"><span class="ico">☆</span>积分</a>
+      <a class="nav-item"><span class="ico">◎</span>证书</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">模型工厂</div>
+      <a class="nav-item" data-go="market"><span class="ico">◭</span>模型超市</a>
+      <a class="nav-item"><span class="ico">◮</span>模型训练</a>
+      <a class="nav-item"><span class="ico">◆</span>行业控制台</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">组织与人员</div>
+      <a class="nav-item"><span class="ico">▣</span>申请审批</a>
+      <a class="nav-item"><span class="ico">▦</span>组织管理</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-label">系统管理</div>
+      <a class="nav-item" data-go="dashboard"><span class="ico">▥</span>数据大屏</a>
+      <a class="nav-item"><span class="ico">⚙</span>超管设置</a>
+    </div>
+  </nav>
+</aside>
+
+<!-- ================= Main ================= -->
+<div class="main">
+  <header class="topbar">
+    <div class="crumb" id="crumb">工作台 <span>/</span> <b>首页</b></div>
+    <div class="topbar-right">
+      <button class="btn btn-sm btn-ghost">⌘ 快捷键</button>
+      <div class="avatar">刘</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- ============ 00 首页 ============ -->
+    <section class="screen on" id="home">
+      <div class="page-head">
+        <div class="page-head-row">
+          <div>
+            <div class="page-eyebrow">光线科技有限公司（山东）</div>
+            <h1 class="page-title">欢迎回来，刘成龙 👋</h1>
+            <div class="page-desc">今天有 <b>7 条草稿滞留</b>、<b>68 条待审核</b>。<a href="#" data-go="capacity" style="color:var(--brand-primary)">去产能看板看瓶颈 →</a></div>
+          </div>
+          <div class="actions">
+            <button class="btn">邀请成员</button>
+            <button class="btn btn-primary" data-go="projects">＋ 创建项目</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert info">
+        <span>ℹ</span>
+        <div><b>本单位尚未配置自有 OSS</b>，文件存放在平台空间（已用 2.8 GB / 10 GB）。配额用满后将无法上传，建议在「组织管理 → 云存储」配置。</div>
+        <button class="btn btn-sm" style="margin-left:auto">去配置</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">团队</span><span class="scope" data-scope="INSTITUTION">本单位</span></div>
+          <div class="stat-num num">24<small>个</small></div>
+          <div class="stat-sub"><span>今日新增 <b>+0</b></span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">账号</span><span class="scope" data-scope="INSTITUTION">本单位</span></div>
+          <div class="stat-num num">198<small>个</small></div>
+          <div class="stat-sub"><span>今日新增 <b>+105</b></span><span class="muted">院校批量导入</span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">标注项目</span><span class="scope" data-scope="INSTITUTION">本单位</span></div>
+          <div class="stat-num num">80<small>个</small></div>
+          <div class="stat-sub"><span>已通过 <b>31</b></span><span>已标注 <b>1,133 / 4,194</b></span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">数据集</span><span class="scope" data-scope="INSTITUTION">本单位</span></div>
+          <div class="stat-num num">40<small>个</small></div>
+          <div class="stat-sub"><span>内置 <b>13</b></span><span>自有 <b>27</b></span></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card-pad">
+          <div class="card-head"><span class="card-title">待办（按影响排序）</span><span class="card-sub">自动排序</span></div>
+          <div class="kv"><span>草稿滞留 &gt; 24h</span><b style="color:var(--warning)">7 条</b></div>
+          <div class="kv"><span>待审核（你是一审）</span><b>68 条</b></div>
+          <div class="kv"><span>待验收（你是终审）</span><b>2 条</b></div>
+          <div class="kv"><span>加入申请待审批</span><b>0 条</b></div>
+          <div class="kv" style="border:0"><span>模型训练排队</span><b>0 个</b></div>
+          <div class="note">原来首页只有"公告 + 快捷入口"，看不出<b>该干什么</b>。v2 把待办按"影响产能的量"排序放在第一屏。</div>
+        </div>
+        <div class="card card-pad">
+          <div class="card-head"><span class="card-title">公告</span><button class="btn btn-sm btn-ghost" style="margin-left:auto">发布</button></div>
+          <div class="card-sub" style="margin:0 0 10px">暂无公告 · 单位管理员可在「首页装扮」发布</div>
+          <div class="card-head" style="margin-top:18px"><span class="card-title">快捷入口</span></div>
+          <div class="chip-line">
+            <span class="tag">标注项目</span><span class="tag">数据集</span><span class="tag">成员管理</span><span class="tag">申请审批</span><span class="tag">产能看板</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 01 产能看板（新增） ============ -->
+    <section class="screen" id="capacity">
+      <div class="page-head">
+        <div class="page-head-row">
+          <div>
+            <div class="page-eyebrow">工作台 / 产能看板</div>
+            <h1 class="page-title">产能卡在哪，一眼看清</h1>
+            <div class="page-desc">按环节看停留时长，按人看负载与质量。数据每 5 分钟刷新一次（最近 16:02）。</div>
+          </div>
+          <div class="actions">
+            <div class="seg"><button class="on">本团队</button><button>本单位</button><button>全平台</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert warning">
+        <span>⚠</span>
+        <div><b>瓶颈：审核环节。</b>待审核 68 条，平均停留 <b>31 小时</b>（P90 96 小时），近 7 天增长 42%。建议增加 1 名质检员或启用打回理由模板（可减少 23% 往返）。</div>
+        <button class="btn btn-sm" style="margin-left:auto">查看待审核</button>
+      </div>
+
+      <div class="funnel">
+        <div class="funnel-step">
+          <div class="fs-label">待领取</div><div class="fs-num num">1,279</div>
+          <div class="fs-dwell">停留 P50 2.1h</div>
+          <div class="progress" style="margin-top:8px"><i class="p-remain" style="width:100%"></i></div>
+        </div>
+        <div class="funnel-step">
+          <div class="fs-label">标注中（含草稿 7）</div><div class="fs-num num">800</div>
+          <div class="fs-dwell">停留 P50 6.4h</div>
+          <div class="progress" style="margin-top:8px"><i class="p-flight" style="width:62%"></i><i class="p-remain" style="width:38%"></i></div>
+        </div>
+        <div class="funnel-step bottleneck">
+          <div class="fs-label">待审核 ⚠</div><div class="fs-num num">68</div>
+          <div class="fs-dwell" style="color:var(--warning)">停留 P50 31h · P90 96h</div>
+          <div class="progress" style="margin-top:8px"><i style="width:100%;background:var(--warning)"></i></div>
+        </div>
+        <div class="funnel-step">
+          <div class="fs-label">待验收</div><div class="fs-num num">2</div>
+          <div class="fs-dwell">停留 P50 4.8h</div>
+          <div class="progress" style="margin-top:8px"><i style="width:100%;background:var(--state-pending-validation)"></i></div>
+        </div>
+        <div class="funnel-step">
+          <div class="fs-label">已通过</div><div class="fs-num num" style="color:var(--success)">172</div>
+          <div class="fs-dwell">交付率 3.9%</div>
+          <div class="progress" style="margin-top:8px"><i class="p-passed" style="width:100%"></i></div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:12px">
+        <div class="card">
+          <div class="card-pad" style="padding-bottom:6px"><div class="card-head" style="margin:0"><span class="card-title">交付预测</span><span class="card-sub">基于近 7 天吞吐</span></div></div>
+          <div class="card-pad" style="padding-top:8px">
+            <div class="price-big num" style="color:var(--brand-primary)">2026-12-05</div>
+            <div class="stat-sub" style="margin-bottom:10px"><span>乐观 <b>11-28</b></span><span>中性 <b>12-05</b></span><span>悲观 <b>12-18</b></span></div>
+            <div class="alert info" style="margin:0"><span>↗</span><div>若审核环节增加 1 人，预计可提前 <b>6 天</b>（至 11-29）。</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-pad" style="padding-bottom:6px"><div class="card-head" style="margin:0"><span class="card-title">近 14 天 通过 vs 新增</span><span class="card-sub">净积压 -28</span></div></div>
+          <div class="card-pad" style="padding-top:0">
+            <div class="mini-bars" style="height:96px;align-items:flex-end">
+              <i style="height:40%;background:var(--border-strong)"></i><i style="height:62%;background:var(--border-strong)"></i><i style="height:30%;background:var(--border-strong)"></i><i style="height:72%;background:var(--border-strong)"></i><i style="height:54%;background:var(--border-strong)"></i><i style="height:88%;background:var(--border-strong)"></i><i style="height:44%;background:var(--border-strong)"></i>
+              <i style="height:22%"></i><i style="height:38%"></i><i style="height:18%"></i><i style="height:52%"></i><i style="height:66%"></i><i style="height:34%"></i><i style="height:58%"></i>
+            </div>
+            <div class="legend-item" style="margin-top:8px"><span class="dotc" style="background:var(--border-strong)"></span>新增任务<span class="dotc" style="background:var(--brand-primary);margin-left:12px"></span>通过任务</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-pad" style="padding-bottom:0"><div class="card-head"><span class="card-title">按人负载</span><span class="card-sub">点击列头排序</span></div></div>
+        <table>
+          <thead><tr><th>成员</th><th>手中任务</th><th>今日通过</th><th>平均打回次数</th><th>平均质量分</th><th>草稿滞留</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr><td>刘成龙</td><td class="num">47</td><td class="num">31</td><td class="num">0.4</td><td class="num">92</td><td class="num">2</td><td><span class="pill" data-s="working"><span class="dot"></span>负载偏高</span></td></tr>
+            <tr class="flag"><td>小王</td><td class="num">12</td><td class="num">4</td><td class="num">1.8</td><td class="num">71</td><td class="num" style="color:var(--warning);font-weight:700">5</td><td><span class="pill" data-s="drafting"><span class="dot"></span>草稿滞留</span></td></tr>
+            <tr><td>李四</td><td class="num">5</td><td class="num">9</td><td class="num">0.3</td><td class="num">95</td><td class="num">0</td><td><span class="pill" data-s="passed"><span class="dot"></span>健康</span></td></tr>
+            <tr><td>张三</td><td class="num">40</td><td class="num">2</td><td class="num">0.9</td><td class="num">83</td><td class="num">0</td><td><span class="pill" data-s="unclaimed"><span class="dot"></span>可接单</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">这是 v2 新增页面：把原本散落在 6 个页面的数字，收敛成"<b>瓶颈 + ETA + 按人负载</b>"三件事。数据来自 <span class="mono">/api/projects/{id}/workflow/stats</span> 聚合。</div>
+    </section>
+
+    <!-- ============ 02 项目列表 ============ -->
+    <section class="screen" id="projects">
+      <div class="page-head">
+        <div class="page-head-row">
+          <div>
+            <div class="page-eyebrow">数据生产 / 标注项目</div>
+            <h1 class="page-title">标注项目</h1>
+            <div class="page-desc">个人空间与团队空间统一入口 · 项目角色在项目内分配</div>
+          </div>
+          <div class="actions">
+            <div class="seg"><button class="on">刘成龙的团队</button><button>全部</button></div>
+            <button class="btn btn-primary">＋ 新建项目</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">项目总数</span><span class="scope" data-scope="TEAM">本团队</span></div>
+          <div class="stat-num num">47<small>个</small></div>
+          <div class="stat-sub"><span>团队空间 <b>47</b></span><span>个人 <b>0</b></span><span>未发布 <b>2</b></span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">项目类型</span><span class="scope" data-scope="TEAM">本团队</span></div>
+          <div class="stat-num num">2<small>类</small></div>
+          <div class="stat-sub"><span>生产模式 <b>41</b></span><span>院校实训 <b>6</b></span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">交付率</span><span class="scope" data-scope="TEAM">本团队</span></div>
+          <div class="stat-num num">3.9<small>%</small></div>
+          <div class="stat-sub"><span>已通过 <b>31</b></span><span>在途 <b>23</b></span><span>待领取 <b>1,279</b></span></div>
+        </div>
+        <div class="stat">
+          <div class="stat-top"><span class="stat-label">存储空间</span><span class="scope" data-scope="INSTITUTION">本单位</span></div>
+          <div class="stat-num num">2.8<small>GB / 10 GB</small></div>
+          <div class="progress" style="margin-top:6px"><i class="p-flight" style="width:28%"></i></div>
+          <div class="stat-sub"><span>28.3% · 未配置自有 OSS</span></div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-bottom:12px;align-items:center">
+        <div class="seg"><button class="on">网格视图</button><button>列表视图</button></div>
+        <button class="btn btn-sm">全部类型 ▾</button>
+        <button class="btn btn-sm">全部状态 ▾</button>
+        <div class="muted" style="margin-left:auto;font-size:12px">共 47 个项目 · 每页 30 条</div>
+      </div>
+
+      <div class="pgrid">
+        <div class="pcard">
+          <div class="pcard-top"><div class="pcard-ico">◫</div><div class="pcard-name">玻璃缺陷检测 Project #32</div>
+            <button class="btn btn-sm btn-ghost" style="margin-left:auto">⋯</button></div>
+          <div class="pcard-rate"><b>0%</b><span>通过率</span><span style="margin-left:auto" class="pill" data-s="working"><span class="dot"></span>已发布</span></div>
+          <div class="progress"><i class="p-passed" style="width:0%"></i><i class="p-flight" style="width:27%"></i><i class="p-remain" style="width:73%"></i></div>
+          <div class="pcard-states">
+            <span>待领取 <b>22</b></span><span>标注中 <b>7</b></span><span>草稿 <b style="color:var(--warning)">2</b></span>
+            <span>待审核 <b>1</b></span><span>待验收 <b>0</b></span><span>已通过 <b>0</b></span>
+          </div>
+          <div class="pcard-foot"><div class="avatar-xs">刘</div>刘成龙 · 2026-11-14 13:50<span style="margin-left:auto">30 条任务</span></div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><div class="pcard-ico" style="background:var(--success-bg)">◫</div><div class="pcard-name">玻璃瓶缺陷 Project #31</div>
+            <button class="btn btn-sm btn-ghost" style="margin-left:auto">⋯</button></div>
+          <div class="pcard-rate"><b style="color:var(--success)">100%</b><span>通过率</span><span style="margin-left:auto" class="pill" data-s="passed"><span class="dot"></span>已发布</span></div>
+          <div class="progress"><i class="p-passed" style="width:100%"></i></div>
+          <div class="pcard-states">
+            <span>待领取 <b>0</b></span><span>标注中 <b>0</b></span><span>草稿 <b>0</b></span>
+            <span>待审核 <b>0</b></span><span>待验收 <b>0</b></span><span>已通过 <b style="color:var(--success)">30</b></span>
+          </div>
+          <div class="pcard-foot"><div class="avatar-xs">刘</div>刘成龙 · 2026-11-14 10:46<span style="margin-left:auto">30 条任务</span></div>
+        </div>
+
+        <div class="pcard">
+          <div class="pcard-top"><div class="pcard-ico" style="background:var(--warning-bg)">◫</div><div class="pcard-name">回复选择</div>
+            <button class="btn btn-sm btn-ghost" style="margin-left:auto">⋯</button></div>
+          <div class="pcard-rate"><b>0%</b><span>通过率</span><span style="margin-left:auto" class="pill" data-s="unclaimed"><span class="dot"></span>未发布</span></div>
+          <div class="progress"><i class="p-remain" style="width:100%"></i></div>
+          <div class="pcard-states">
+            <span>待领取 <b>210</b></span><span>标注中 <b>6</b></span><span>草稿 <b>0</b></span>
+            <span>待审核 <b>0</b></span><span>待验收 <b>0</b></span><span>已通过 <b>0</b></span>
+          </div>
+          <div class="pcard-foot"><div class="avatar-xs">刘</div>刘成龙 · 2026-11-09 15:16<span style="margin-left:auto">216 条任务</span></div>
+        </div>
+
+        <div class="pcard" data-go="tasks">
+          <div class="pcard-top"><div class="pcard-ico">◫</div><div class="pcard-name">玻璃缺陷检测 Project #32（点我进工作台）</div></div>
+          <div class="pcard-rate"><b>0%</b><span>通过率</span><span style="margin-left:auto" class="pill" data-s="drafting"><span class="dot"></span>含草稿滞留</span></div>
+          <div class="progress"><i class="p-flight" style="width:27%"></i><i class="p-remain" style="width:73%"></i></div>
+          <div class="pcard-states"><span>提示：卡片 hover 才展开完整六态（v2 紧凑化）</span></div>
+          <div class="pcard-foot"><div class="avatar-xs">刘</div>刘成龙<span style="margin-left:auto">点击进入 →</span></div>
+        </div>
+      </div>
+      <div class="note">改造点：① 统计卡加 <b>scope chip</b>；② 进度条改三段式并写"通过率"；③ 卡片增「草稿」计数（v2 新状态）；④ 六态在 hover 浮层展开，默认 3 行紧凑。</div>
+    </section>
+
+    <!-- ============ 03 任务管理器 ============ -->
+    <section class="screen" id="tasks">
+      <div class="page-head">
+        <div class="page-head-row">
+          <div>
+            <div class="page-eyebrow">数据生产 / 标注项目 / 项目工作台</div>
+            <h1 class="page-title">任务管理器</h1>
+            <div class="page-desc">当前身份：<b>项目标注员 · 刘成龙</b> · 点行进入作业页；领取后任务进入「进行中」</div>
+          </div>
+          <div class="actions">
+            <button class="btn">数据统计</button>
+            <button class="btn">数据导出</button>
+            <button class="btn btn-primary" data-go="annotate">进入标注 →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="step-done">✓ 1 角色设置</div><div class="step-done">✓ 2 设置</div><div>3 奖励</div><div>4 项目发布</div>
+        <div style="margin-left:auto" class="on">任务管理器</div>
+      </div>
+
+      <div class="card card-pad" style="margin-bottom:12px;display:flex;align-items:center;gap:14px">
+        <span class="muted" style="font-size:12.5px">当前身份</span>
+        <div class="seg"><button>项目验收员</button><button>项目质检员</button><button class="on">项目标注员</button><button>项目管理员</button></div>
+        <span class="muted" style="font-size:12px;margin-left:auto">生产模式 · 一个任务只由一名标注员独立完成</span>
+      </div>
+
+      <div class="alert warning"><span>⚠</span><div>你有 <b>2 条草稿超过 24 小时未提交</b>（任务 10218、10223）。草稿不会进入审核，请尽快提交。<button class="btn btn-sm" style="margin-left:10px">批量提交</button></div></div>
+
+      <div class="card">
+        <div class="card-pad" style="display:flex;gap:10px;align-items:center;border-bottom:1px solid var(--border)">
+          <div class="seg"><button class="on">待领取 22</button><button>进行中 8</button><button>草稿 2</button><button>待处理 0</button><button>已完成 0</button></div>
+          <button class="btn btn-sm" style="margin-left:auto">筛选</button>
+          <button class="btn btn-sm btn-primary">领取标注</button>
+        </div>
+        <table>
+          <thead><tr><th style="width:28px"><input type="checkbox"></th><th style="width:52px">缩略图</th><th>任务 ID</th><th>变更时间</th><th>标注员</th><th>标注状态</th><th>审核状态</th><th>验收状态</th></tr></thead>
+          <tbody>
+            <tr class="flag"><td><input type="checkbox" checked></td><td><div class="thumb"></div></td><td class="t-id">10218</td><td class="muted num">2026-11-14 13:52</td><td>刘成龙</td><td><span class="pill" data-s="drafting"><span class="dot"></span>草稿滞留 25h</span></td><td><span class="muted">—</span></td><td><span class="muted">—</span></td></tr>
+            <tr><td><input type="checkbox"></td><td><div class="thumb"></div></td><td class="t-id">10219</td><td class="muted num">2026-11-14 13:52</td><td class="muted">—</td><td><span class="pill" data-s="unclaimed"><span class="dot"></span>未标注</span></td><td><span class="muted">—</span></td><td><span class="muted">—</span></td></tr>
+            <tr><td><input type="checkbox"></td><td><div class="thumb"></div></td><td class="t-id">10220</td><td class="muted num">2026-11-14 13:52</td><td class="muted">—</td><td><span class="pill" data-s="unclaimed"><span class="dot"></span>未标注</span></td><td><span class="muted">—</span></td><td><span class="muted">—</span></td></tr>
+            <tr><td><input type="checkbox"></td><td><div class="thumb"></div></td><td class="t-id">10221</td><td class="muted num">2026-11-14 13:52</td><td>刘成龙</td><td><span class="pill" data-s="working"><span class="dot"></span>标注中</span></td><td><span class="muted">—</span></td><td><span class="muted">—</span></td></tr>
+            <tr><td><input type="checkbox"></td><td><div class="thumb"></div></td><td class="t-id">10222</td><td class="muted num">2026-11-14 13:52</td><td>刘成龙</td><td><span class="pill" data-s="pending_review"><span class="dot"></span>已提交</span></td><td><span class="pill" data-s="pending_review"><span class="dot"></span>待审核</span></td><td><span class="muted">—</span></td></tr>
+            <tr><td><input type="checkbox"></td><td><div class="thumb"></div></td><td class="t-id">10223</td><td class="muted num">2026-11-14 13:52</td><td>刘成龙</td><td><span class="pill" data-s="drafting"><span class="dot"></span>草稿滞留 26h</span></td><td><span class="muted">—</span></td><td><span class="muted">—</span></td></tr>
+            <tr><td><input type="checkbox"></td><td><div class="thumb"></div></td><td class="t-id">10224</td><td class="muted num">2026-11-14 13:52</td><td>刘成龙</td><td><span class="pill" data-s="rejected"><span class="dot"></span>已打回 · 类别错</span></td><td><span class="pill" data-s="rejected"><span class="dot"></span>打回 1 次</span></td><td><span class="muted">—</span></td></tr>
+            <tr><td><input type="checkbox"></td><td><div class="thumb"></div></td><td class="t-id">10225</td><td class="muted num">2026-11-14 13:52</td><td>刘成龙</td><td><span class="pill" data-s="passed"><span class="dot"></span>已通过</span></td><td><span class="pill" data-s="passed"><span class="dot"></span>已通过</span></td><td><span class="pill" data-s="passed"><span class="dot"></span>已通过 92 分</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">改造点：① 状态列统一 StatusPill 色板；② 新增「草稿」tab 与滞留黄条；③ 打回显示<b>原因分类</b>（"类别错"）与次数；④ 验收显示质量分。</div>
+    </section>
+
+    <!-- ============ 04 标注工作台 ============ -->
+    <section class="screen" id="annotate">
+      <div class="page-head">
+        <div class="page-head-row">
+          <div>
+            <div class="page-eyebrow">项目 / 玻璃缺陷检测 Project #32 / 标注</div>
+            <h1 class="page-title">标注工作台</h1>
+            <div class="page-desc">任务 <span class="mono">#10218</span> · 标签 <b>defect</b> · 快捷键 <span class="kbd">1</span> 切标签 <span class="kbd">Shift+1</span> 适应窗口 <span class="kbd">Ctrl+滚轮</span> 缩放</div>
+          </div>
+          <div class="actions">
+            <button class="btn" data-go="tasks">← 任务管理器</button>
+            <button class="btn">更新草稿</button>
+            <button class="btn btn-primary">提交</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="anno">
+        <div class="anno-list">
+          <div class="anno-task"><div class="thumb" style="width:26px;height:20px"></div>1</div>
+          <div class="anno-task"><div class="thumb" style="width:26px;height:20px"></div>2</div>
+          <div class="anno-task"><div class="thumb" style="width:26px;height:20px"></div>3</div>
+          <div class="anno-task"><div class="thumb" style="width:26px;height:20px"></div>4</div>
+          <div class="anno-task on"><div class="thumb" style="width:26px;height:20px"></div>9 · 10218</div>
+          <div class="anno-task"><div class="thumb" style="width:26px;height:20px"></div>10</div>
+          <div class="anno-task"><div class="thumb" style="width:26px;height:20px"></div>11</div>
+          <div class="anno-task"><div class="thumb" style="width:26px;height:20px"></div>12</div>
+          <div class="anno-task"><div class="thumb" style="width:26px;height:20px"></div>13</div>
+          <div class="anno-task"><div class="thumb" style="width:26px;height:20px"></div>14</div>
+        </div>
+        <div class="anno-canvas">
+          <div class="bottle">
+            <img src="../05-assets/canvas-sample.jpg" alt="标注样例：玻璃瓶缺陷检测">
+            <div class="bbox" style="left:132px;top:120px;width:104px;height:160px"><span>defect</span></div>
+          </div>
+          <div class="tools"><i class="on">↖</i><i>✥</i><i>⊕</i><i>▭</i><i>✎</i><i>⊹</i></div>
+          <div class="labels"><span class="label-chip"><b>1</b>defect</span><span class="label-chip"><b>2</b>scratch</span><span class="label-chip"><b>3</b>bubble</span></div>
+          <div class="anno-bar">
+            <span class="mono">#10218</span>
+            <button class="btn btn-sm btn-ghost">↶</button><button class="btn btn-sm btn-ghost">↷</button><button class="btn btn-sm btn-ghost">⌫</button>
+            <span style="margin-left:auto" class="muted">适应窗口 · 100%</span>
+          </div>
+        </div>
+        <div class="anno-panel">
+          <div class="anno-tabs"><div class="on">信息</div><div>验收</div><div>历史</div><div style="color:var(--warning);font-weight:600">打回 1</div></div>
+          <div class="anno-body">
+            <div style="font-weight:600;color:var(--text-primary);margin-bottom:8px">上一轮打回</div>
+            <div class="kv"><span>原因分类</span><b style="color:var(--danger)">类别错</b></div>
+            <div class="kv"><span>说明</span><b style="font-weight:500;text-align:right;font-size:11.5px">瓶口划痕被标成了 defect</b></div>
+            <div class="kv"><span>打回人 / 时间</span><b style="font-weight:500;font-size:11.5px">王质检 · 11-13 18:22</b></div>
+            <div class="kv" style="border:0"><span>本次修改</span><b>新增 1 区域</b></div>
+            <button class="btn btn-sm" style="width:100%;margin-top:8px">叠加对比上一版</button>
+            <div style="margin-top:16px;font-weight:600;color:var(--text-primary);margin-bottom:8px">区域</div>
+            <div class="kv"><span>▭ defect #1</span><b class="mono">136×96</b></div>
+            <div class="muted" style="font-size:11.5px;margin-top:6px">已标注的区域显示在此，可点选定位、删除。</div>
+          </div>
+        </div>
+      </div>
+      <div class="note">改造点（<b>不动画布行为</b>）：① 顶部加统一面包屑与「← 任务管理器」；② 「提交」改主色（原为 Label Studio 深靛蓝）；③ 右面板加第 4 页签「打回」显示原因分类 + 叠加对比；④ 标签快捷键条统一 kbd 样式。</div>
+    </section>
+
+    <!-- ============ 05 积分 ============ -->
+    <section class="screen" id="rewards">
+      <div class="page-head">
+        <div class="page-head-row">
+          <div>
+            <div class="page-eyebrow">标注奖励 / 积分</div>
+            <h1 class="page-title">积分</h1>
+            <div class="page-desc">每一分都来自你终审通过的任务。切换项目可以看清积分来自哪个项目。</div>
+          </div>
+          <div class="actions"><div class="seg"><button class="on">全部项目</button><button>玻璃瓶缺陷 #31</button></div><button class="btn">导出对账单</button></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-top"><span class="stat-label">当前积分</span><span class="scope" data-scope="SELF">自己</span></div><div class="stat-num num">403<small>分</small></div><div class="stat-sub"><span>本月新增 <b>403</b></span></div></div>
+        <div class="stat"><div class="stat-top"><span class="stat-label">通过任务数</span><span class="scope" data-scope="SELF">自己</span></div><div class="stat-num num">31<small>条</small></div><div class="stat-sub"><span>打回 <b>2</b> 次（扣 4 分）</span></div></div>
+        <div class="stat"><div class="stat-top"><span class="stat-label">平均质量分</span><span class="scope" data-scope="SELF">自己</span></div><div class="stat-num num">92<small>/100</small></div><div class="stat-sub"><span>A 档 · 加成 +1/任务</span></div></div>
+        <div class="stat"><div class="stat-top"><span class="stat-label">组织内排名</span><span class="scope" data-scope="TEAM">本团队</span></div><div class="stat-num num">#1</div><div class="stat-sub"><span>距下一张证书还差 <b>47 分</b></span></div></div>
+      </div>
+      <div class="card">
+        <div class="card-pad" style="padding-bottom:0"><div class="card-head"><span class="card-title">积分流水</span><span class="card-sub">点击行展开计分构成（v2 新增）</span></div></div>
+        <table>
+          <thead><tr><th>时间</th><th>项目</th><th>类型</th><th>说明</th><th style="text-align:right">积分</th></tr></thead>
+          <tbody>
+            <tr style="background:var(--bg-surface-2)"><td class="muted num">2026-11-14 11:13</td><td>玻璃瓶缺陷 #31</td><td>任务获得</td><td>任务 #10218 终审通过</td><td class="num" style="text-align:right;color:var(--success);font-weight:700">+13</td></tr>
+            <tr><td colspan="5" style="padding:0;border-bottom:1px solid var(--border)">
+              <div style="padding:10px 14px 12px 38px;font-size:12px;color:var(--text-secondary);background:var(--brand-primary-subtle)">
+                基础分 <b>+10</b> · 首稿加成 <b>+2</b>（零打回） · 评分加成 <b>+1</b>（质量分 92 → A 档） · 打回扣分 <b>0</b>（打回 0 次） = <b style="color:var(--brand-primary)">+13</b>
+              </div>
+            </td></tr>
+            <tr><td class="muted num">2026-11-13 18:22</td><td>玻璃瓶缺陷 #31</td><td style="color:var(--danger)">打回扣分</td><td>任务 #10223 一审打回（类别错）</td><td class="num" style="text-align:right;color:var(--danger);font-weight:700">−2</td></tr>
+            <tr><td class="muted num">2026-11-13 16:40</td><td>视频分类-暴力识别</td><td>任务获得</td><td>任务 #10201 终审通过</td><td class="num" style="text-align:right;color:var(--success);font-weight:700">+13</td></tr>
+            <tr><td class="muted num">2026-11-12 09:15</td><td>玻璃瓶缺陷 #31</td><td>任务获得</td><td>任务 #10190 终审通过</td><td class="num" style="text-align:right;color:var(--success);font-weight:700">+13</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">改造点：① 流水行可展开<b>计分构成</b>（原来只知道 +13，不知道为什么）；② 打回<b>即时扣分</b>（v2 规则变更，消除"先交再改"）；③ 排名卡显示"距下一张证书还差 N 分"。</div>
+    </section>
+
+    <!-- ============ 06 模型超市 ============ -->
+    <section class="screen" id="market">
+      <div class="page-head">
+        <div class="page-head-row">
+          <div>
+            <div class="page-eyebrow">模型工厂 / 模型超市</div>
+            <h1 class="page-title">把验证过的模型，直接带回你的产线</h1>
+            <div class="page-desc">21 个在架模型，覆盖检测、分割、关键点与多模态。勾选 2–4 个可横向对比（v2 新增）。</div>
+          </div>
+          <div class="actions"><button class="btn" disabled title="请勾选 2–4 个模型后对比">对比已选 (0)</button><button class="btn">下架的模型</button></div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-top"><span class="stat-label">在架模型</span><span class="scope" data-scope="PLATFORM">全平台</span></div><div class="stat-num num">21<small>个</small></div><div class="stat-sub"><span>本周新增 <b>6</b></span></div></div>
+        <div class="stat"><div class="stat-top"><span class="stat-label">累计下载</span><span class="scope" data-scope="PLATFORM">全平台</span></div><div class="stat-num num">2.27<small>GB</small></div><div class="stat-sub"><span>较上月 <b>+18.4%</b></span></div></div>
+        <div class="stat"><div class="stat-top"><span class="stat-label">认证供应商</span><span class="scope" data-scope="PLATFORM">全平台</span></div><div class="stat-num num">14<small>家</small></div><div class="stat-sub"><span>覆盖 11 个制造细分</span></div></div>
+        <div class="stat"><div class="stat-top"><span class="stat-label">平均 mAP50</span><span class="scope" data-scope="PLATFORM">全平台</span></div><div class="stat-num num">67.3<small>%</small></div><div class="stat-sub"><span>COCO + 产线私有数据复测</span></div></div>
+      </div>
+      <div class="grid-3">
+        <div class="card card-pad">
+          <div class="card-head"><input type="checkbox"><div class="pcard-ico">◭</div><span style="margin-left:auto" class="pill" data-s="passed"><span class="dot"></span>精选</span></div>
+          <div class="card-title">货架 · run #15</div>
+          <div class="muted" style="font-size:11.5px;margin:4px 0 10px">datasets-fight_finetune · 72 张 · 120 epochs · GPU3</div>
+          <div class="kv"><span>mAP50</span><b>88.4%</b></div>
+          <div class="kv"><span>mAP50-95</span><b>49.6%</b></div>
+          <div class="kv"><span>参数量 / 体积</span><b>2.59M · 5.2MB</b></div>
+          <div class="kv" style="border:0"><span>平台采纳率 <span class="tag" style="font-size:9px">新</span></span><b style="color:var(--brand-primary)">62%</b></div>
+          <div class="row" style="margin-top:10px"><button class="btn btn-sm" style="flex:1">下载权重</button><button class="btn btn-sm btn-primary" style="flex:1">部署</button></div>
+        </div>
+        <div class="card card-pad">
+          <div class="card-head"><input type="checkbox" checked><div class="pcard-ico" style="background:var(--success-bg)">◭</div><span style="margin-left:auto" class="pill" data-s="working"><span class="dot"></span>本地训练</span></div>
+          <div class="card-title">knife_stick_ft · run #7</div>
+          <div class="muted" style="font-size:11.5px;margin:4px 0 10px">knife_stick_ft-merged · 9,237 张 · 120 epochs</div>
+          <div class="kv"><span>mAP50</span><b>91.9%</b></div>
+          <div class="kv"><span>mAP50-95</span><b>62.1%</b></div>
+          <div class="kv"><span>参数量 / 体积</span><b>2.59M · 5.2MB</b></div>
+          <div class="kv" style="border:0"><span>平台采纳率 <span class="tag" style="font-size:9px">新</span></span><b style="color:var(--brand-primary)">54%</b></div>
+          <div class="row" style="margin-top:10px"><button class="btn btn-sm" style="flex:1">下载权重</button><button class="btn btn-sm btn-primary" style="flex:1">部署</button></div>
+        </div>
+        <div class="card card-pad">
+          <div class="card-head"><input type="checkbox" checked><div class="pcard-ico" style="background:var(--state-pending-review-bg)">◭</div><span style="margin-left:auto" class="pill" data-s="pending_review"><span class="dot"></span>外部</span></div>
+          <div class="card-title">YOLO11n 官方基线 · 检测</div>
+          <div class="muted" style="font-size:11.5px;margin:4px 0 10px">COCO · 118k 张 · 官方权重</div>
+          <div class="kv"><span>mAP50</span><b>64.2%</b></div>
+          <div class="kv"><span>mAP50-95</span><b>41.8%</b></div>
+          <div class="kv"><span>参数量 / 体积</span><b>2.6M · 5.4MB</b></div>
+          <div class="kv" style="border:0"><span>平台采纳率 <span class="tag" style="font-size:9px">新</span></span><b style="color:var(--brand-primary)">—</b></div>
+          <div class="row" style="margin-top:10px"><button class="btn btn-sm" style="flex:1">下载权重</button><button class="btn btn-sm btn-primary" style="flex:1">部署</button></div>
+        </div>
+      </div>
+      <div class="note">改造点：① 卡片支持多选 → 顶部「对比已选」；② 卡片新增 <b>平台采纳率</b>（把"模型好不好"从训练指标变成产线证据）；③ 「下架的模型」从按钮改次级入口。</div>
+    </section>
+
+    <!-- ============ 07 数据大屏 ============ -->
+    <section class="screen" id="dashboard">
+      <div class="dark-wrap">
+        <div style="display:flex;align-items:center;margin-bottom:16px">
+          <div>
+            <div style="font-size:24px;font-weight:700;letter-spacing:-.3px">平台运营数据大屏</div>
+            <div style="font-size:11px;letter-spacing:.16em;color:rgba(255,255,255,.45);margin-top:2px">PLATFORM OPERATIONS · LIVE</div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div style="font-size:12px;color:rgba(255,255,255,.55)">2026-11-14 16:02</div>
+            <button class="btn btn-sm" style="background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:#fff;margin-top:6px">⟳ 刷新</button>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi"><div class="kpi-label">单位 <span class="tag" style="background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);font-size:9px">全平台</span></div><div class="kpi-num num">8</div><div class="kpi-today">数据集 67</div></div>
+          <div class="kpi"><div class="kpi-label">团队</div><div class="kpi-num num">24</div><div class="kpi-today">今日 +0</div></div>
+          <div class="kpi"><div class="kpi-label">空间</div><div class="kpi-num num">269</div><div class="kpi-today">数据集 67</div></div>
+          <div class="kpi"><div class="kpi-label">项目</div><div class="kpi-num num">95</div><div class="kpi-today">今日 +2</div></div>
+          <div class="kpi"><div class="kpi-label">任务</div><div class="kpi-num num">4,825</div><div class="kpi-today">今日 +60</div></div>
+          <div class="kpi"><div class="kpi-label">成员</div><div class="kpi-num num">198</div><div class="kpi-today">今日 +105</div></div>
+        </div>
+
+        <div class="dark-grid">
+          <div class="kpi">
+            <div style="display:flex;align-items:center;margin-bottom:12px">
+              <div style="font-size:14px;font-weight:600">增长趋势</div>
+              <div class="legend" style="margin-left:auto"><span><i style="background:#5CB8FF"></i>成员</span><span><i style="background:#9F6CC6"></i>项目</span><span><i style="background:#7CF0C5"></i>任务</span></div>
+            </div>
+            <div class="mini-bars" style="height:140px;gap:5px">
+              <i style="height:18%;background:#5CB8FF"></i><i style="height:30%;background:#9F6CC6"></i><i style="height:22%;background:#7CF0C5"></i>
+              <i style="height:52%;background:#5CB8FF"></i><i style="height:64%;background:#9F6CC6"></i><i style="height:40%;background:#7CF0C5"></i>
+              <i style="height:34%;background:#5CB8FF"></i><i style="height:44%;background:#9F6CC6"></i><i style="height:28%;background:#7CF0C5"></i>
+              <i style="height:70%;background:#5CB8FF"></i><i style="height:58%;background:#9F6CC6"></i><i style="height:46%;background:#7CF0C5"></i>
+              <i style="height:88%;background:#5CB8FF"></i><i style="height:72%;background:#9F6CC6"></i><i style="height:60%;background:#7CF0C5"></i>
+              <i style="height:62%;background:#5CB8FF"></i><i style="height:50%;background:#9F6CC6"></i><i style="height:38%;background:#7CF0C5"></i>
+              <i style="height:36%;background:#5CB8FF"></i><i style="height:40%;background:#9F6CC6"></i><i style="height:26%;background:#7CF0C5"></i>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.4);margin-top:8px">
+              <span>11/08</span><span>11/09</span><span>11/10</span><span>11/11</span><span>11/12</span><span>11/13</span><span>11/14</span>
+            </div>
+          </div>
+          <div class="kpi">
+            <div style="font-size:14px;font-weight:600;margin-bottom:6px">流水线交付</div>
+            <div class="donut"><div class="donut-in"><div><b>3.9%</b><div style="font-size:10px;color:rgba(255,255,255,.5)">交付率</div></div></div></div>
+            <div style="margin-top:14px">
+              <div class="kv" style="border-color:rgba(255,255,255,.08);color:rgba(255,255,255,.6)"><span>已通过</span><b style="color:#7CF0C5">172</b></div>
+              <div class="kv" style="border-color:rgba(255,255,255,.08);color:rgba(255,255,255,.6)"><span>审核中</span><b style="color:#fff">68</b></div>
+              <div class="kv" style="border-color:rgba(255,255,255,.08);color:rgba(255,255,255,.6)"><span>已打回</span><b style="color:#FF9A93">9</b></div>
+              <div class="kv" style="border:0;color:rgba(255,255,255,.6)"><span>进行中</span><b style="color:#fff">4,157</b></div>
+            </div>
+            <div style="font-size:11px;color:#FFD08A;margin-top:8px">瓶颈：4,157 条进行中，交付率偏低</div>
+          </div>
+        </div>
+        <div class="note" style="background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.6)">
+          改造点：① KPI 加 scope；② 交付率旁给<b>一句话瓶颈结论</b>；③ 与浅色主题共用 token（仅换色板），不再是第三套视觉语言。
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+const titles = {
+  home: ['工作台','首页'], capacity: ['工作台','产能看板'], projects: ['数据生产','标注项目'],
+  tasks: ['数据生产','项目工作台','任务管理器'], annotate: ['项目','标注'], rewards: ['标注奖励','积分'],
+  market: ['模型工厂','模型超市'], dashboard: ['系统管理','数据大屏']
+};
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on', s.id===id));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.go===id));
+  const t = titles[id] || ['', id];
+  document.getElementById('crumb').innerHTML = t.slice(0,-1).join(' <span>/</span> ') + ' <span>/</span> <b>' + t[t.length-1] + '</b>';
+  window.scrollTo({top:0, behavior:'instant'});
+  history.replaceState(null,'','#'+id);
+}
+document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click', e=>{ e.preventDefault(); go(el.dataset.go); }));
+document.querySelectorAll('.seg').forEach(seg=>seg.addEventListener('click', e=>{
+  if(e.target.tagName!=='BUTTON') return;
+  seg.querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+  e.target.classList.add('on');
+}));
+document.querySelectorAll('.tabs').forEach(t=>t.addEventListener('click', e=>{
+  if(!e.target.textContent.trim()) return;
+  t.querySelectorAll('div').forEach(d=>d.classList.remove('on'));
+  e.target.classList.add('on');
+}));
+const initial = location.hash.replace('#','');
+go(titles[initial] ? initial : 'home');
+</script>
+</body>
+</html>
