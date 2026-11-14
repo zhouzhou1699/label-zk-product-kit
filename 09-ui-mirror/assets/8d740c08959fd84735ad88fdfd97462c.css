@@ -1,0 +1,682 @@
+/*
+ * Shared design system: Premium Blue.
+ *
+ * Extracted from the four auth prototypes (login, register entry, new unit, unit pending), whose
+ * root token blocks are identical. This sheet is the common base the four page skins build on;
+ * the class names below are a contract and must match the templates exactly.
+ *
+ * Only static CSS lives here: no @import, no webfont or CDN request, no .scss (guardrail G3).
+ */
+
+/* --- Token layer --- */
+:root{
+  /* Brand: the old variable names are kept, only the values are new */
+  --indigo:#2A7AF0; --violet:#2B7FF0; --purple:#58D7FF;
+  --grad:linear-gradient(110deg,#236FE7 0%,#2B91F8 50%,#53C5FF 100%);
+  --grad-soft:linear-gradient(135deg,#EAF4FF 0%,#F4FAFF 100%);
+  --blue:#2878F6; --blue-2:#69A9FF; --cyan:#58D7FF;
+  /* Text */
+  --ink:#14345D; --sub:#6F86A7; --faint:#93A9C2;
+  --ink-2:#31577E; --ink-3:#496B92;
+  /* Lines and surfaces */
+  --line:rgba(56,117,190,.13); --line-2:rgba(56,117,190,.09);
+  --bg:#F3F8FF;
+  --glass:rgba(255,255,255,.72); --glass-2:rgba(255,255,255,.52);
+  --blur:blur(20px);
+  /* Semantic colours */
+  --green:#0EA76C; --green-bg:#E7F8F0;
+  --amber:#D98A06; --amber-bg:#FEF3E2;
+  --red:#E05252;  --red-bg:#FDECEC;
+  --slate:#64748B; --slate-bg:#EFF1F6;
+  --violet-bg:#EAF3FF;
+  /* Sizes and shadows */
+  --radius:18px;
+  --r-lg:24px;
+  --shadow:0 18px 50px rgba(44,103,168,.10);
+  --shadow-sm:0 10px 30px rgba(44,103,168,.07);
+  --shadow-lg:0 28px 80px rgba(44,103,168,.15);
+  --sans:"Inter","PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif;
+  --mono:"JetBrains Mono","SF Mono",Consolas,"Courier New",monospace;
+}
+
+/* --- Base reset --- */
+*{box-sizing:border-box;margin:0;padding:0;font-family:var(--sans)}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:var(--bg);color:var(--ink);font-size:14px;line-height:1.62}
+a{color:var(--indigo);text-decoration:none}
+
+/* --- Environment layer: aurora + grid, applied to every page without touching the HTML --- */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(circle at 14% 14%,rgba(65,147,255,.13),transparent 26%),
+    radial-gradient(circle at 86% 88%,rgba(71,199,255,.12),transparent 24%),
+    linear-gradient(135deg,#F9FCFF 0%,#F3F8FF 48%,#EDF5FF 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.5;
+  background-image:
+    linear-gradient(rgba(79,139,206,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(79,139,206,.055) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(120% 90% at 50% 0%,#000 35%,transparent 100%);
+  -webkit-mask-image:radial-gradient(120% 90% at 50% 0%,#000 35%,transparent 100%)}
+/* Fallback so page content floats above the environment layer */
+.auth-login,.auth-standalone{position:relative;z-index:1}
+
+/* --- Shared controls --- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:none;cursor:default;
+  position:relative;overflow:hidden;border-radius:13px;font-size:13.5px;font-weight:700;
+  letter-spacing:.02em;padding:11px 22px;transition:.2s ease}
+.btn-primary{background:var(--grad);color:#fff;box-shadow:0 14px 28px rgba(42,122,239,.24)}
+.btn-primary::after{content:"";position:absolute;top:-40%;left:-30%;width:25%;height:180%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.42),transparent);
+  transform:skewX(-24deg);transition:left .75s ease}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 18px 34px rgba(42,122,239,.30)}
+.btn-primary:hover::after{left:120%}
+.btn-ghost{background:rgba(255,255,255,.72);border:1px solid var(--line);color:var(--ink-2);
+  backdrop-filter:blur(10px)}
+.btn-ghost:hover{border-color:rgba(42,124,242,.42);color:var(--violet);background:#fff}
+.btn-sm{padding:7px 15px;font-size:12.5px;border-radius:11px}
+.btn-block{width:100%}
+
+/* Submit in flight (`branding/form-busy.js`, shared by the server-rendered login and sign-up
+   pages). The ring is a real element the script inserts, not a pseudo element: these buttons
+   already spend ::after on the brand shine, and the upstream `lsf-button-ls` sheets that dress the
+   fallback pages may claim ::before. `currentColor` keeps it legible on both the gradient login
+   button and a pale ghost one. */
+button.is-busy{pointer-events:none;opacity:.82}
+.btn-busy-spinner{display:inline-block;width:13px;height:13px;margin-right:8px;vertical-align:-2px;
+  border-radius:50%;border:2px solid currentColor;border-top-color:transparent;
+  animation:btn-busy-spin .7s linear infinite}
+@keyframes btn-busy-spin{to{transform:rotate(360deg)}}
+
+.field{margin-bottom:19px}
+/* Upstream core/static/css/login.css declares a global label{font-family:'Hellix'!important;
+   font-size:.825rem!important}, so font-family/font-size/font-weight need !important to win. */
+.field label{display:block;font-size:12.5px !important;font-family:var(--sans) !important;
+  font-weight:600 !important;color:var(--ink-3);margin-bottom:8px;letter-spacing:.01em}
+.field label .req{color:var(--red);margin-left:2px}
+.input{width:100%;border:1px solid var(--line);border-radius:14px;padding:12px 15px;font-size:13.5px;
+  color:#21496F;background:rgba(247,251,255,.8);outline:none;
+  transition:border-color .22s ease,box-shadow .22s ease,background .22s ease}
+.input:focus{border-color:rgba(42,124,242,.5);background:#fff;
+  box-shadow:0 0 0 4px rgba(42,124,242,.09),0 10px 26px rgba(42,124,242,.08)}
+.input::placeholder{color:#A8B8CA}
+.input[readonly]{background:rgba(240,246,253,.8);color:var(--sub)}
+/* Native checkboxes share the brand blue: Chrome's default blue clashes with the palette */
+input[type=checkbox]{accent-color:#2B7FF0;width:15px;height:15px;vertical-align:middle}
+select.input{appearance:none;padding-right:34px;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%2377A1CB" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>');background-repeat:no-repeat;background-position:right 14px center}
+
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;
+  padding:4px 11px;border-radius:999px;white-space:nowrap;letter-spacing:.01em}
+.chip::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;
+  box-shadow:0 0 0 3px rgba(255,255,255,.65)}
+.chip-green{background:var(--green-bg);color:var(--green)}
+.chip-amber{background:var(--amber-bg);color:var(--amber)}
+.chip-red{background:var(--red-bg);color:var(--red)}
+.chip-slate{background:#F2F4F9;color:#939AAE}
+.chip-violet{background:var(--violet-bg);color:var(--violet)}
+/* "Not enabled" pauses the intake and can be resumed, unlike "disabled/expired" (grey = void);
+   a cool blue-grey keeps it out of both the brand action ramp and the dead grey. */
+.chip-mute{background:#EDF2FA;color:#63739B}
+
+.hint{font-size:12px;color:var(--faint);margin-top:6px;line-height:1.6}
+/* A field error (`institutions/signup_institution.html`). It used to share `.hint` with the neutral
+   copy under the same input, so a refusal ("The verification code is wrong.") rendered as the same
+   faint grey sentence as the instruction beside it -- indistinguishable from nothing happening.
+   The refusal is now an object of its own: a white cross on a red disc, then the sentence in red.
+   The control the error belongs to takes the error border through `:has`, so the input itself
+   says where the problem is, not only the line below it. */
+.field-error{display:flex;align-items:flex-start;gap:7px;margin-top:8px;
+  font-size:12.5px;font-weight:600;line-height:1.55;color:var(--red)}
+/* The icon is drawn here instead of being repeated in the markup: every refusal is the same object. */
+.field-error::before{content:"×";flex:0 0 auto;width:16px;height:16px;margin-top:1px;
+  border-radius:50%;background:var(--red);color:#fff;font-size:12px;font-weight:700;
+  line-height:16px;text-align:center}
+.field:has(.field-error) .input{border-color:rgba(224,82,82,.45);background:var(--red-bg)}
+.divider{display:flex;align-items:center;gap:12px;color:#B7C4D6;font-size:12px;margin:20px 0}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* --- Panels and notices --- */
+.panel{background:var(--glass);backdrop-filter:var(--blur);
+  border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden}
+.panel .pad{padding:22px 24px}
+
+.notice{font-size:12px;color:#8A9EB4;line-height:1.7;padding:11px 13px;
+  border:1px dashed rgba(81,128,184,.18);border-radius:13px;background:rgba(248,252,255,.56)}
+.notice--error{border-style:solid;border-color:rgba(224,82,82,.30);background:var(--red-bg);color:var(--red)}
+.notice--center{text-align:center}
+
+/* --- Simple pill badges --- */
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;
+  padding:3px 10px;border-radius:999px}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-amber{background:var(--amber-bg);color:var(--amber)}
+.badge-slate{background:var(--slate-bg);color:var(--slate)}
+
+/* --- Key/value strip --- */
+.skv{display:flex;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:20px}
+.skv div{flex:1;padding:12px 15px;border-left:1px solid var(--line)}
+.skv div:first-child{border-left:none}
+.skv .k{font-size:11.5px;color:var(--faint)}
+.skv .v{font-size:13.5px;font-weight:600;margin-top:3px}
+
+/* --- Status timeline --- */
+.timeline{border:1px solid var(--line);border-radius:14px;padding:6px 0}
+.st{display:flex;gap:11px;padding:11px 15px}
+.st .dot{flex:0 0 18px;height:18px;border-radius:50%;background:#EFF1F6;color:#A8AEC4;font-size:10.5px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:3px}
+.st.done .dot{background:#E7F8F0;color:#0EA76C}
+.st.now .dot{background:var(--grad);color:#fff}
+.st .tx{flex:1;min-width:0;font-size:12.5px;color:var(--sub)}
+.st b{display:block;font-size:13px;color:var(--ink-2)}
+.st.now .tx b{color:#1C57C6}
+.st .who{margin-left:auto;flex:0 0 auto;font-size:11px;color:var(--faint);white-space:nowrap;padding-top:2px}
+.lmeta{text-align:center;font-size:12px;color:var(--faint);margin-top:16px}
+
+/* =====================================================================
+   Login page (.auth-login)
+   ===================================================================== */
+.auth-login{
+  position:relative;
+  width:100vw;height:100vh;
+  display:grid;
+  grid-template-columns:minmax(0,1.25fr) minmax(430px,.75fr);
+  overflow:hidden;
+}
+
+/* Environment layer: a horizontal-masked grid layered on top of body::after */
+.auth-login .bg-grid{
+  position:absolute;inset:0;pointer-events:none;opacity:.45;
+  background-image:
+    linear-gradient(rgba(79,139,206,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(79,139,206,.055) 1px,transparent 1px);
+  background-size:40px 40px;
+  mask-image:linear-gradient(to right,#000,transparent 72%);
+  -webkit-mask-image:linear-gradient(to right,#000,transparent 72%);
+}
+.auth-login .aurora{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none}
+.auth-login .aurora.a{width:500px;height:500px;left:-210px;top:-170px;background:rgba(63,142,255,.18)}
+.auth-login .aurora.b{width:420px;height:420px;left:40%;bottom:-220px;background:rgba(79,207,255,.14)}
+.auth-login .aurora.c{width:360px;height:360px;right:-180px;top:4%;background:rgba(126,181,255,.13)}
+#particleCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+
+/* --- Left: brand area --- */
+.auth-brand{position:relative;min-width:0;overflow:hidden;padding:42px 56px 44px;
+  border-right:1px solid rgba(75,124,183,.12)}
+.auth-brand > *{position:relative;z-index:2}
+
+.auth-brand .topbar{display:flex;align-items:center;gap:13px}
+.auth-brand .logo{position:relative;width:44px;height:44px;display:grid;place-items:center;border-radius:15px;
+  background:#fff;
+  box-shadow:0 16px 34px rgba(41,126,246,.20),0 0 0 1px rgba(56,117,190,.12)}
+.auth-brand .logo::before{content:"";position:absolute;inset:-4px;border:1px solid rgba(47,126,246,.16);border-radius:18px}
+.auth-brand .logo img{display:block;width:74%;height:74%;object-fit:contain}
+.auth-brand .brand-name{font-size:15.5px;font-weight:700;letter-spacing:.02em}
+.auth-brand .brand-meta{margin-left:auto;display:flex;align-items:center;gap:8px;color:#7890AE;
+  font:10.5px var(--mono);letter-spacing:.1em}
+.auth-brand .status-dot{width:7px;height:7px;border-radius:50%;background:#42C7FF;
+  box-shadow:0 0 0 5px rgba(66,199,255,.1),0 0 14px rgba(66,199,255,.55)}
+
+.auth-brand .auth-main{position:relative;min-height:calc(100% - 58px);display:flex;flex-direction:column;
+  justify-content:space-between;padding-top:7vh}
+.auth-brand .kicker{display:inline-flex;align-items:center;gap:10px;color:#4A78AC;
+  font:10.5px var(--mono);letter-spacing:.26em}
+.auth-brand .kicker-line{width:34px;height:1px;background:linear-gradient(90deg,var(--blue),transparent)}
+
+.auth-brand .hero{max-width:700px}
+.auth-brand .hero h1{margin-top:20px;font-size:clamp(34px,3.6vw,54px);line-height:1.12;letter-spacing:-.045em;
+  font-weight:800;color:#153962}
+.auth-brand .hero h1 em{font-style:normal;
+  background:linear-gradient(110deg,#1B67DB 15%,#4EA9FF 65%,#56D4FF 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.auth-brand .hero p{margin-top:19px;max-width:600px;color:#6D85A5;font-size:14px;line-height:1.9}
+/* The platform's own sign-in image (超管设置 → 登录页主图): the brand column's **background**, covering
+   the whole panel behind the brand name, the headline, the copy and the three feature cards. It replaces
+   the aurora environment on that half of the page, which is the point -- one photograph instead of a
+   picture pasted above a headline (an inline figure ate the whole fold on a 900px tall viewport).
+
+   The `::after` veil is what makes a photograph usable as a background for dark blue copy: opaque enough
+   on the left, where the text sits, to hold a 4.5:1 contrast, and nearly transparent on the right so the
+   artwork reads. It is a gradient rather than a flat scrim because the copy is left aligned -- the veil
+   follows the content instead of dimming the whole panel. */
+.auth-brand .brand-hero{position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-size:cover;background-position:center;background-repeat:no-repeat}
+.auth-brand .brand-hero::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(96deg,
+    rgba(250,253,255,.95) 0%,
+    rgba(250,253,255,.88) 30%,
+    rgba(250,253,255,.66) 55%,
+    rgba(250,253,255,.26) 82%,
+    rgba(250,253,255,.10) 100%)}
+/* The topbar and the copy sit on the veil; the feature cards keep their own glass, one notch more opaque
+   when a photograph is behind them, so they stay legible over the darker right side of an image.
+   `:has()` (not a class on the section) keeps the template free of state: the rule exists exactly when
+   the overlay does. */
+.auth-brand:has(.brand-hero) .feature{background:rgba(255,255,255,.78)}
+
+/* --- Three capability cards: large mono index + hairline rule + uppercase tracked label --- */
+.auth-brand .feature-rail{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:720px}
+.auth-brand .feature{position:relative;overflow:hidden;padding:15px 16px 17px;
+  border:1px solid rgba(74,126,193,.13);border-radius:20px;
+  background:rgba(255,255,255,.55);backdrop-filter:blur(14px);
+  box-shadow:0 16px 44px rgba(58,111,171,.07);
+  transition:transform .28s cubic-bezier(.4,0,.2,1),box-shadow .28s,border-color .28s,background .28s}
+/* Top hairline that sweeps in from the left on hover, hinting "activated" */
+.auth-brand .feature::before{content:"";position:absolute;left:0;top:0;height:2px;width:0;
+  background:linear-gradient(90deg,#2878F6,#58D7FF);transition:width .5s ease}
+.auth-brand .feature:hover{transform:translateY(-3px);border-color:rgba(42,124,242,.30);
+  background:rgba(255,255,255,.8);box-shadow:0 26px 60px rgba(44,103,168,.14)}
+.auth-brand .feature:hover::before{width:100%}
+.auth-brand .f-top{display:flex;align-items:center;gap:10px}
+.auth-brand .f-idx{font:700 26px/1 var(--mono);letter-spacing:-.05em;
+  background:linear-gradient(160deg,#1B67DB,#56D4FF);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.auth-brand .f-rule{flex:1;height:1px;background:linear-gradient(90deg,rgba(56,117,190,.30),rgba(56,117,190,0))}
+.auth-brand .f-key{font:600 9.5px var(--mono);letter-spacing:.2em;color:#8BA0BA}
+.auth-brand .feature h3{margin-top:13px;font-size:14.5px;font-weight:700;color:#1E4670;letter-spacing:-.02em;
+  line-height:1.35}
+.auth-brand .feature p{margin-top:6px;font-size:11.5px;color:#7E95AE;line-height:1.7}
+
+/* --- Right: sign-in pane --- */
+/* Centred with `margin: auto` on the card rather than with `align-items: center`: the pane is the
+   scroll container (the card grew a security-check block), and flex centring plus a scroll container
+   clips the *top* of an oversize item -- the card's first line would be unreachable at the small
+   viewport heights this page is used at. `margin:auto` centres while there is room and aligns to the
+   start when there is not. */
+.auth-pane{position:relative;display:flex;padding:36px;overflow-y:auto}
+.auth-shell{width:min(420px,100%);margin:auto}
+.auth-card{position:relative;overflow:hidden;padding:34px 34px 30px;
+  border:1px solid rgba(79,132,198,.16);border-radius:28px;
+  background:rgba(255,255,255,.76);
+  box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.9);
+  backdrop-filter:blur(24px)}
+.auth-card::before{content:"";position:absolute;width:220px;height:220px;top:-140px;right:-80px;
+  border-radius:50%;background:rgba(88,177,255,.18);filter:blur(8px)}
+.auth-card .card-top{display:flex;align-items:center;gap:11px;color:#7990AB;
+  font:10px var(--mono);letter-spacing:.18em}
+.auth-card .card-top .mini-dot{width:6px;height:6px;border-radius:50%;background:#3F95FF;
+  box-shadow:0 0 0 5px rgba(63,149,255,.1)}
+.auth-card h2{margin-top:13px;color:#163A63;font-size:30px;letter-spacing:-.025em;font-weight:800}
+.auth-card .sub{margin-top:7px;color:#8196AE;font-size:13px}
+.auth-card .fields{margin-top:28px}
+/* The login card spaces its fields from the top; reset the shared bottom margin */
+.auth-card .field{margin-top:17px;margin-bottom:0}
+.auth-card .field:first-child{margin-top:0}
+.auth-card .field label{display:flex;justify-content:space-between;margin:0 0 8px 2px;
+  font-size:12px;font-weight:600;color:#496B92}
+.auth-card .label-meta{font:10px var(--mono);color:#9BAFC5}
+
+/* The login field is a flex container wrapping an svg + a real input, so it gets its own class
+   to avoid colliding with the shared .input styling of a bare input */
+.auth-input{display:flex;align-items:center;gap:11px;height:50px;padding:0 14px;
+  border:1px solid rgba(77,125,185,.14);border-radius:15px;background:rgba(247,251,255,.8);
+  transition:.22s ease}
+.auth-input svg{flex:none;color:#77A1CB}
+.auth-input input{width:100%;height:100%;border:0;outline:0;background:transparent;
+  color:#21496F;font-size:14px}
+.auth-input input::placeholder{color:#A8B8CA}
+.auth-input:focus-within{border-color:rgba(42,124,242,.5);background:#fff;
+  box-shadow:0 0 0 4px rgba(42,124,242,.08),0 10px 28px rgba(42,124,242,.08)}
+.auth-card .eye{display:grid;place-items:center;width:28px;height:28px;padding:0;border:0;background:transparent;
+  cursor:pointer}
+.auth-card .eye svg{opacity:.72}
+.auth-card .eye:hover svg{opacity:1}
+
+.auth-card .row{display:flex;align-items:center;justify-content:space-between;margin-top:16px;
+  color:#7B90A8;font-size:12px}
+.auth-card .check{display:flex;align-items:center;gap:8px;cursor:pointer}
+.auth-card .check input{display:none}
+.auth-card .box{width:17px;height:17px;border-radius:6px;border:1px solid rgba(78,126,187,.22);background:#F7FBFF;
+  display:grid;place-items:center;transition:.2s ease}
+.auth-card .box svg{opacity:0;transform:scale(.5);transition:.2s ease}
+.auth-card .check input:checked + .box{background:linear-gradient(135deg,#2B7FF7,#5BC6FF);border-color:transparent;
+  box-shadow:0 6px 14px rgba(50,129,244,.2)}
+.auth-card .check input:checked + .box svg{opacity:1;transform:scale(1)}
+.auth-card .link{color:#2D79E9;font-weight:600;font-size:12.5px}
+.auth-card .link:hover{text-decoration:underline}
+
+/* Login submit: re-dimensioned to a full-width 52px block, and it carries the brand gradient
+   itself. The prototype's login page does the same -- its local .btn IS the gradient button,
+   so a neutral .btn here would render pale and unstyled. Kept on `.auth-card .btn` (not a
+   `.btn-primary` class on the element) so the rule outranks every single-class button rule
+   the sheets loaded around this one may declare. */
+.auth-card .btn{width:100%;height:52px;margin-top:25px;border:0;border-radius:16px;color:#fff;
+  font-size:14px;letter-spacing:.12em;background:var(--grad);cursor:pointer;
+  box-shadow:0 16px 30px rgba(42,122,239,.23)}
+.auth-card .btn::after{content:"";position:absolute;top:-40%;left:-30%;width:25%;height:180%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.45),transparent);
+  transform:skewX(-24deg);transition:left .75s ease}
+.auth-card .btn:hover{transform:translateY(-2px);box-shadow:0 20px 36px rgba(42,122,239,.28)}
+.auth-card .btn:hover::after{left:120%}
+
+.auth-card .bottom{margin-top:20px;text-align:center;color:#93A3B6;font-size:12px}
+.auth-card .bottom a{color:#55769B;font-weight:600}
+.auth-card .hint{margin-top:18px;padding:11px 13px;border:1px dashed rgba(81,128,184,.18);border-radius:13px;
+  color:#8A9EB4;font-size:10px;line-height:1.7;text-align:center;background:rgba(248,252,255,.56)}
+.auth-card .security{margin-top:14px;display:flex;justify-content:center;gap:12px;color:#9BAABD;
+  font:9px var(--mono);letter-spacing:.14em}
+
+/* Short viewports: the card gained a security-check block, so at laptop heights the spacing is what
+   gives way -- never the type scale (12px labels / 14px field text / 13px body stay as declared above)
+   and not two controls in one row, because there is no row here. 940px is the height at which the
+   uncompressed card stops fitting a 900px-tall browser window; below that the pane scrolls instead
+   (see `.auth-pane`), which is the last resort rather than the first. */
+@media (max-height:940px){
+  .auth-pane{padding:20px}
+  .auth-card{padding:24px 30px 22px}
+  .auth-card h2{font-size:26px;margin-top:9px}
+  .auth-card .form-title-image{margin-bottom:8px}
+  .auth-card .sub{margin-top:5px}
+  .auth-card .fields{margin-top:18px}
+  .auth-card .field{margin-top:13px}
+  .auth-card .field label{margin-bottom:6px}
+  .auth-input{height:46px}
+  .auth-card .row{margin-top:13px}
+  .auth-card .btn{height:48px;margin-top:16px}
+  .auth-card .bottom{margin-top:12px}
+  .auth-card .security{margin-top:10px}
+}
+
+/* Starts off-screen: a fixed orb without left/top would sit at the top-left corner, half visible;
+   the JS takes over positioning on the first mouse move. */
+.cursor-orb{position:fixed;left:-60px;top:-60px;z-index:12;width:16px;height:16px;border-radius:50%;pointer-events:none;
+  border:1px solid rgba(43,132,245,.35);background:rgba(88,201,255,.13);
+  box-shadow:0 0 24px rgba(52,144,247,.24);transform:translate(-50%,-50%);mix-blend-mode:multiply}
+
+/* --- Mount points kept by the templates (branding tests assert these classes exist) --- */
+.brand-title{display:flex;align-items:center}
+.brand-title img{display:block;height:44px;width:auto;object-fit:contain}
+.form-title-image{margin-bottom:14px}
+.form-title-image img{height:30px;width:auto;object-fit:contain}
+/* The "Platform sign-in" caption line inside the glass card */
+.page-title{font-size:13px;font-weight:600;color:var(--sub)}
+
+/* =====================================================================
+   Register entry page (.auth-standalone)
+   ===================================================================== */
+.auth-standalone{min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:52px 24px 60px}
+.auth-top{display:flex;align-items:center;gap:11px;font-weight:700;font-size:16px;color:var(--ink-2);margin-bottom:30px}
+.auth-h1{font-size:30px;font-weight:800;letter-spacing:-.035em;margin-bottom:9px}
+.auth-sub{color:var(--sub);font-size:13.5px;margin-bottom:32px;text-align:center;max-width:560px;line-height:1.75}
+.auth-col{width:680px;max-width:100%}
+.way{background:rgba(255,255,255,.78);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  border:1px solid var(--line);border-radius:24px;padding:28px 30px;box-shadow:var(--shadow);position:relative}
+/* Corner flag pill; the label text is rendered by the template as an HTML element */
+.way.has-flag::before{content:"";position:absolute;top:-11px;right:22px;background:var(--grad);
+  color:#fff;font-size:11px;font-weight:600;padding:3px 11px;border-radius:999px;box-shadow:0 4px 10px rgba(47,114,232,.35)}
+.way .hd{display:flex;gap:16px;align-items:flex-start}
+.way .ic{flex:0 0 46px;height:46px;border-radius:13px;background:linear-gradient(135deg,#e5f0ff,#e8f4ff);
+  display:flex;align-items:center;justify-content:center}
+.way h3{font-size:17px;margin-bottom:8px}
+.way p{font-size:13px;color:var(--sub);line-height:1.72}
+.way .meta{margin:15px 0 18px;display:flex;gap:26px;font-size:12px;color:var(--faint)}
+.way .meta b{color:#1C57C6;font-weight:600}
+.ih{display:flex;align-items:center;gap:12px;margin:30px 0 14px}
+.ih .t{font-size:13.5px;font-weight:700;color:var(--ink-2);white-space:nowrap}
+.ih .l{flex:1;height:1px;background:var(--line)}
+.ilist{background:rgba(255,255,255,.78);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+.ihead{padding:16px 22px 13px;border-bottom:1px solid var(--line-2)}
+.ihead b{font-size:13.5px;display:block;margin-bottom:5px}
+.ihead p{font-size:12.5px;color:var(--sub);line-height:1.65}
+.lrow{display:flex;align-items:center;gap:15px;padding:15px 22px;border-bottom:1px solid var(--line-2)}
+.lrow:last-of-type{border-bottom:none}
+.lic{flex:0 0 38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.ltx{flex:1;min-width:0}
+.ltx b{display:block;font-size:13.2px;margin-bottom:3px}
+.ltx span{font-size:12.2px;color:var(--sub);line-height:1.6}
+.lres{flex:0 0 190px;text-align:right;font-size:12.2px;color:var(--sub);line-height:1.55}
+.lres em{font-style:normal;color:var(--violet);font-weight:600}
+.ifoot{padding:13px 22px;background:rgba(248,252,255,.6);font-size:12.2px;color:var(--sub);border-top:1px solid var(--line-2)}
+.ifoot b{color:var(--ink-2)}
+.auth-foot{margin-top:26px;font-size:13px;color:var(--sub)}
+
+/* =====================================================================
+   New unit page (.auth-standalone, content in .auth-wrap)
+   ===================================================================== */
+/* Shares the root class with the register entry page but starts 6px higher, and is the only one
+   wrapping its content in .auth-wrap */
+.auth-standalone:has(> .auth-wrap){padding:46px 24px 60px}
+.auth-wrap{width:640px;max-width:100%}
+.auth-head{display:flex;align-items:center;gap:11px;font-weight:700;font-size:15px;color:var(--ink-2);margin-bottom:26px}
+.types{display:flex;gap:12px;margin-bottom:6px}
+.type{flex:1;border:1px solid var(--line);border-radius:14px;padding:13px 10px;text-align:center;
+  font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;display:block}
+.type.on{border-color:rgba(42,124,242,.55);background:var(--violet-bg);color:#1C57C6;
+  box-shadow:0 0 0 4px rgba(42,124,242,.09)}
+.type input{position:absolute;opacity:0;pointer-events:none}
+.type:has(input:checked){border-color:rgba(42,124,242,.55);background:var(--violet-bg);color:#1C57C6;box-shadow:0 0 0 4px rgba(42,124,242,.09)}
+.two{display:flex;gap:14px}
+.two .field{flex:1}
+/* ``hidden`` must be stated explicitly for the flex containers: ``display:flex`` above outranks the
+   user agent's ``[hidden]{display:none}``, so the university-only pair would stay visible when the
+   template marks it hidden for an enterprise or training unit. */
+.two[hidden]{display:none}
+
+/* --- Drag puzzle: the sign-in card (branding/templates/users/new-ui/user_login.html) and the unit
+   registration page (institutions/signup_institution.html) ---
+   Both pictures are drawn by the server (``institutions/captcha.py``): the background arrives with the
+   irregular notch already composited into it, and the piece arrives as a cut-out with an alpha edge.
+   Nothing here draws either of them -- the offset never leaves the server, so a stylesheet that also
+   painted the notch would be painting an answer it does not have. What is styled here is the frame,
+   the rail and the three states.
+
+   The stage's **aspect ratio** below is only the placeholder shown before the first picture arrives
+   (the two live tracks are 320x150 for the registration form and 320x104 for the sign-in card, which is
+   the compact variant). Once a challenge is in hand the script writes the stage's height, and both
+   pictures' boxes, inline from the drawn track -- see `pin()`/`layout()` in `puzzle.js` for the reason:
+   a notch and a loose piece scaled by two different boxes are two different sizes on two different
+   lines, and no drag can mate them.
+
+   The gradient is the placeholder shown while the first draw is in flight, so the stage never collapses
+   from 0px to its ratio and never shows as a white box. */
+.puzzle{margin-top:2px}
+/* Not `overflow:hidden`: the loose piece is a real object on the picture, and at the start of the
+   track it sits in the rounded corner -- clipping it there cut the puzzle edge off. The rounding is
+   carried by the picture itself (`.puzzle-bg`) and by this element's own background. */
+.puzzle-stage{position:relative;width:100%;aspect-ratio:320/150;border-radius:16px;
+  border:1px solid var(--line);background-size:100% 100%;background-position:center;
+  background-color:#DCEBFF;
+  background-image:
+    radial-gradient(circle at 22% 28%,rgba(255,255,255,.72),transparent 44%),
+    linear-gradient(135deg,#DCEBFF 0%,#BFDBFF 46%,#A6CDFA 100%)}
+.puzzle.puzzle--compact .puzzle-stage{aspect-ratio:320/104}
+.puzzle-stage img{display:block;border:0;pointer-events:none;user-select:none;-webkit-user-drag:none}
+/* The photograph with the notch in it. Stretched rather than `object-fit: cover`: the server renders
+   exactly the track's aspect ratio, so covering and stretching are the same thing -- and stretching is
+   the one that keeps the piece's scale identical to the background's. The declaration is also written
+   inline by the script (`pin()`); it is here as the no-script fallback, not as the authority. */
+.puzzle-bg{position:absolute;inset:0;width:100%;height:100%;border-radius:15px}
+/* The loose piece: an alpha PNG/WebP, moved by the script. `drop-shadow` rather than `box-shadow`
+   because the shadow has to follow the irregular outline; the piece is not clipped by CSS at all, its
+   shape is in the picture. The shadow is kept inside the piece's own box: a wide one reads as a bigger
+   object than the notch it has to cover, which is the opposite of what the person is being asked to do. */
+.puzzle-piece{position:absolute;left:0;top:0;z-index:2;
+  filter:drop-shadow(0 5px 8px rgba(9,32,66,.30));
+  transition:filter .22s ease}
+.puzzle.is-solved .puzzle-piece{filter:drop-shadow(0 4px 10px rgba(9,32,66,.18))}
+.puzzle-rail{position:relative;height:46px;margin-top:12px;border-radius:14px;overflow:hidden;
+  border:1px solid var(--line);background:rgba(247,251,255,.85);
+  transition:border-color .22s ease,background .22s ease}
+.puzzle-rail .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--violet-bg)}
+.puzzle-knob{position:absolute;top:4px;left:4px;width:38px;height:38px;padding:0;border:0;
+  border-radius:12px;display:grid;place-items:center;color:#fff;cursor:grab;touch-action:none;
+  background:var(--grad);box-shadow:0 10px 22px rgba(42,122,239,.28);
+  transition:background .22s ease,box-shadow .22s ease,outline-color .22s ease}
+.puzzle-knob:active{cursor:grabbing}
+/* The knob is the keyboard's handle on the same control (arrows move the piece, Enter submits the
+   drop), so it has to say where the focus is. */
+.puzzle-knob:focus-visible{outline:2px solid rgba(42,124,242,.6);outline-offset:2px}
+.puzzle-hint{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+  font-size:12px;color:var(--faint);padding-left:46px}
+/* The one sentence under the rail: the instruction before a drop, the verdict after it. `min-height`
+   reserves the line, so a refusal does not push the submit button down the card. */
+.puzzle-msg{font-size:12px;line-height:1.6;margin-top:6px;min-height:18px;color:var(--faint)}
+.puzzle.is-loading .puzzle-stage,.puzzle.is-loading .puzzle-rail{opacity:.55}
+.puzzle.is-checking .puzzle-knob{background:linear-gradient(135deg,#3F95FF,#7FD4FF);cursor:progress}
+/* Solved, the rail's instruction is spent: the sentence under it says so, and a knob that still
+   says "drag me" next to a green rail is the one thing that reads as unfinished. */
+.puzzle.is-solved .puzzle-hint{display:none}
+.puzzle.is-solved .puzzle-knob{cursor:default}
+/* Solved: the rail turns green, which is the feedback that says the drop was accepted without a
+   sentence having to. (The notch stays visible in the photograph -- the piece is drawn *over* it, so
+   a solved stage reads as whole because the pixels match, not because the hole was repainted.) */
+/* "Placed, not judged": the registration form's endpoint compares the ticket when it is asked to send,
+   so a drop there is a neutral state -- the rail stays blue until the server answers. */
+.puzzle.is-dropped .puzzle-rail{border-color:rgba(42,124,242,.42);background:var(--violet-bg)}
+.puzzle.is-dropped .puzzle-hint{display:none}
+.puzzle.is-solved .puzzle-rail{border-color:rgba(14,167,108,.42);background:var(--green-bg)}
+.puzzle.is-solved .puzzle-knob{background:linear-gradient(135deg,#0EA76C,#42C7FF)}
+.puzzle.is-refused{animation:puzzle-shake .4s ease}
+.puzzle.is-refused .puzzle-rail{border-color:rgba(224,82,82,.42);background:var(--red-bg)}
+.puzzle.is-refused .puzzle-knob{background:linear-gradient(135deg,#E05252,#FF9C8A)}
+@keyframes puzzle-shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+/* The code row: the input takes the space, the button a fixed width, both 46px tall */
+.code-row{display:flex;gap:12px}
+.code-row .input{flex:1;min-width:0}
+.code-row .btn-code{flex:0 0 132px;height:46px;padding:0;cursor:pointer}
+.code-row .btn-code:disabled{cursor:default;opacity:.55}
+.code-row .btn-code:disabled:hover{border-color:var(--line);color:var(--ink-2);background:rgba(255,255,255,.72)}
+/* The outcome of 发送验证码, stated under the button that was clicked. The success sentence used to be
+   written into `.puzzle-msg` -- 12px grey, above the puzzle -- so the answer to the click landed
+   somewhere other than the click. `display:none` until the page has something to say. */
+.field-status{display:none;margin-top:10px;padding:10px 13px;border-radius:12px;
+  font-size:12.5px;font-weight:600;line-height:1.5;border:1px solid transparent}
+.field-status.is-ok{display:flex;align-items:center;gap:7px;
+  color:var(--green);background:var(--green-bg);border-color:rgba(14,167,108,.28)}
+.field-status.is-error{display:flex;align-items:center;gap:7px;
+  color:var(--red);background:var(--red-bg);border-color:rgba(224,82,82,.30)}
+/* A white check on a green disc / a white cross on a red disc -- the same pair the field errors use,
+   so "sent" and "refused" are readable at a glance and not only by their colour. */
+.field-status.is-ok::before,.field-status.is-error::before{content:"✓";flex:0 0 auto;
+  width:16px;height:16px;border-radius:50%;background:var(--green);color:#fff;
+  font-size:10px;font-weight:700;line-height:16px;text-align:center}
+.field-status.is-error::before{content:"×";background:var(--red);font-size:12px}
+.sec{font-size:12px;font-weight:700;color:var(--faint);letter-spacing:1px;margin:22px 0 14px;
+  display:flex;align-items:center;gap:10px}
+.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.auth-actions{display:flex;gap:12px;margin-top:10px}
+.auth-actions .btn{min-height:44px}
+.auth-actions .btn-ghost{flex:0 0 120px}
+.auth-actions .btn-primary{flex:1}
+
+/* =====================================================================
+   Unit pending page (.auth-standalone.center)
+   ===================================================================== */
+.auth-standalone.center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px 24px}
+.card{width:540px;background:rgba(255,255,255,.78);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);overflow:hidden}
+.banner{background:var(--grad);color:#fff;padding:26px 34px;position:relative;overflow:hidden}
+.banner .glow{position:absolute;width:220px;height:220px;border-radius:50%;background:#9CC7FF;filter:blur(60px);
+  opacity:.5;top:-70px;right:-50px}
+.banner .ok{position:relative;width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center}
+.banner h2{position:relative;font-size:20px;font-weight:800;letter-spacing:-.025em;margin-top:14px}
+.banner p{position:relative;color:rgba(255,255,255,.8);font-size:12.5px;margin-top:5px}
+.body{padding:26px 34px 30px}
+
+/* =====================================================================
+   Invitation landing page (.invite-landing)
+   ===================================================================== */
+/* Ported from the design prototype's ``gcard`` family -- screens 06 (team invitation) and 03 (unit
+   invitation) -- and rooted at this page's own class so the shared ``.btn`` / ``.field`` / ``.input``
+   rules the sheet above already carries cannot leak onto another surface. The environment layer (the
+   aurora and the grid) is the ``body::before`` / ``body::after`` pair at the top of this file, so the
+   page adds no background of its own.
+
+   The card centres itself with ``margin:auto`` inside a ``min-height:100vh`` flex box rather than with
+   ``align-items:center``: a form taller than the viewport (a phone in landscape, a laptop with a small
+   window) would otherwise be clipped at *both* ends and the top would stay unreachable, because the
+   body scrolls but the centred item starts above ``scrollTop:0``. ``margin:auto`` means "centre me if
+   there is room, start at the top otherwise", which is the same technique the prototype's modal uses. */
+.invite-landing{position:relative;z-index:1;min-height:100vh;display:flex;padding:40px 24px}
+.invite-landing .gcard{position:relative;overflow:hidden;width:520px;max-width:100%;margin:auto;
+  border:1px solid rgba(79,132,198,.16);border-radius:28px;
+  background:linear-gradient(158deg,#FFFFFF 0%,#FBFDFF 46%,#F1F8FF 100%);
+  box-shadow:0 24px 80px rgba(44,103,168,.13),inset 0 1px 0 rgba(255,255,255,.95);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+.invite-landing .gcard > *{position:relative;z-index:1}
+
+/* Header: white-to-blue gradient, the 2px gradient hairline and the corner glow of the login card */
+.invite-landing .ghead{position:relative;padding:26px 36px 22px;border-bottom:1px solid rgba(56,117,190,.10);
+  background:
+    radial-gradient(118% 190% at 100% 0%,rgba(88,177,255,.20),rgba(88,177,255,0) 58%),
+    linear-gradient(135deg,#FFFFFF 0%,#F5FAFF 52%,#E9F3FF 100%)}
+.invite-landing .ghead::before{content:"";position:absolute;left:0;right:0;top:0;height:2px;
+  background:linear-gradient(90deg,rgba(35,111,231,0) 0%,#2B91F8 26%,#53C5FF 58%,rgba(83,197,255,0) 100%)}
+.invite-landing .gkick{display:flex;align-items:center;gap:8px;color:#7990AB;
+  font:10px var(--mono);letter-spacing:.18em;text-transform:uppercase}
+.invite-landing .gkick .dot{flex:0 0 6px;width:6px;height:6px;border-radius:50%;background:#3F95FF;
+  box-shadow:0 0 0 5px rgba(63,149,255,.10)}
+.invite-landing .ghead h2{margin-top:13px;color:#163A63;font-size:22px;font-weight:800;
+  letter-spacing:-.028em;line-height:1.32}
+.invite-landing .gkick + h2{margin-top:16px}
+
+.invite-landing .gfrom{display:flex;align-items:center;gap:11px;margin-top:15px}
+.invite-landing .gfrom b{display:block;font-size:14px;font-weight:700;color:#1E4670;letter-spacing:-.01em;
+  overflow-wrap:anywhere}
+.invite-landing .avatar{flex:0 0 34px;width:34px;height:34px;border-radius:50%;background:var(--grad);
+  color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:13px;
+  box-shadow:0 8px 18px rgba(42,122,239,.22)}
+
+.invite-landing .gbody{padding:26px 36px 30px}
+
+/* The target strip: the team or unit the link is bound to, with its lock marker */
+.invite-landing .gobj{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:18px;
+  border:1px solid rgba(77,125,185,.14);
+  background:linear-gradient(135deg,rgba(244,250,255,.95) 0%,rgba(252,254,255,.95) 100%)}
+.invite-landing .gobj .gic{flex:0 0 38px;height:38px;border-radius:12px;display:grid;place-items:center;
+  color:#fff;background:var(--grad);box-shadow:0 10px 20px rgba(42,122,239,.22)}
+.invite-landing .gobj .gtx{flex:1;min-width:0}
+.invite-landing .gobj b{display:block;font-size:14px;font-weight:700;color:#1E4670;letter-spacing:-.01em;
+  overflow-wrap:anywhere}
+/* ``nowrap`` keeps a CJK phrase from folding behind its neighbours (a lock chip is one word to the
+   reader); the name beside it is what wraps, and it is the one with room to. */
+.invite-landing .glock{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;
+  margin-left:auto;font-size:11.5px;font-weight:600;color:#2D79E9;background:rgba(234,243,255,.9);
+  border:1px solid rgba(79,132,198,.16);border-radius:999px;padding:4px 11px}
+
+.invite-landing .gnote{margin:12px 0 10px;padding:10px 13px;border:1px dashed rgba(81,128,184,.20);
+  border-radius:14px;background:rgba(248,252,255,.62);color:#8A9EB4;font-size:11.5px;line-height:1.7}
+.invite-landing .invite-expiry{margin:0 0 20px;font-size:11.5px;color:var(--faint)}
+
+/* The refusal lists of the registration form. The class name is the one both shadows render and the
+   suites assert on, so it is kept and only styled here. */
+.invite-landing .field_errors{list-style:none;margin:7px 0 0;padding:0;display:flex;
+  flex-direction:column;gap:4px}
+.invite-landing .field_errors li{font-size:11.5px;color:var(--red)}
+
+/* A real product's submit button advertises that it is clickable (the prototype's ``.btn`` does not) */
+.invite-landing .btn{cursor:pointer;min-height:48px;border-radius:16px;font-size:14px;letter-spacing:.06em}
+
+/* The "this link cannot be used" card: no form at all, only the reason */
+.invite-landing .invite-notice_invalid{margin:0;padding:14px 16px;border:1px solid rgba(224,82,82,.30);
+  border-radius:16px;background:var(--red-bg)}
+.invite-landing .invite-notice__title{margin:0;font-size:13.5px;font-weight:700;color:var(--red)}
+.invite-landing .invite-notice__reason{margin:6px 0 0;font-size:12.5px;color:#8A5A5A;line-height:1.7}
+
+/* Phones: the card takes the whole width, the two-password row stacks (side-by-side inputs become
+   unusable below ~420px), and the lock chip drops under the target name instead of squeezing it. */
+@media (max-width:560px){
+  .invite-landing{padding:16px 14px}
+  .invite-landing .gcard{border-radius:22px}
+  .invite-landing .ghead{padding:20px 20px 18px}
+  .invite-landing .ghead h2{font-size:19px}
+  .invite-landing .gbody{padding:20px 20px 24px}
+  .invite-landing .two{display:block}
+  .invite-landing .gobj{flex-wrap:wrap;align-items:flex-start}
+  .invite-landing .gobj .glock{margin-left:0}
+}
+
+/* --- Accessibility fallback --- */
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
+/* The rail, compacted with the rest of the short-viewport card. It has to live *after* the puzzle block
+   above: a media query that comes earlier in the sheet loses to a later plain rule of the same
+   specificity, which is how the first attempt at this kept a 46px rail at every viewport height. */
+@media (max-height:940px){
+  .puzzle-rail{height:42px;margin-top:10px}
+  .puzzle-knob{width:34px;height:34px}
+  .puzzle-hint{padding-left:42px}
+}

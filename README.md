@@ -4,7 +4,8 @@
 > 角色视角：资深产品经理。方法：以管理员账号实际登录，走完 30 个页面、抓 61 个真实接口、59 张界面截图，结合前端 bundle 与后端版本信息交叉验证。
 
 **在线浏览**：<https://zhouzhou1699.github.io/label-zk-product-kit/> （仓库首页导航）
-**可点原型**：<https://zhouzhou1699.github.io/label-zk-product-kit/04-prototype/index.html>
+**① 1:1 界面镜像（101 个页面状态）**：<https://zhouzhou1699.github.io/label-zk-product-kit/09-ui-mirror/>
+**② v2 改造原型（8 页）**：<https://zhouzhou1699.github.io/label-zk-product-kit/04-prototype/index.html>
 
 ---
 
@@ -43,9 +44,14 @@ label-zk-product-kit/
 │   ├── 01-设计系统.md                原则 / 色彩 / 排版 / 12 个组件 / 双主题
 │   ├── 02-页面规格说明.md            30 个页面的布局·组件·状态·改造点
 │   └── tokens.css                    可直接 import 的 token（浅色 + 深色）
-├── 04-prototype/
-│   ├── index.html                    ⭐ 可交互高保真原型（8 个页面，双击打开）
+├── 04-prototype/                     【改造原型】v2 应该长什么样
+│   ├── index.html                    ⭐ 可交互原型（8 个页面，双击打开）
 │   └── README.md                     原型说明与差异声明
+├── 09-ui-mirror/                     【1:1 界面镜像】线上现在长什么样
+│   ├── index.html                    ⭐ 101 个页面状态的索引
+│   ├── *.html                        101 个真实界面快照（真实 DOM + 真实 CSS）
+│   ├── assets/                       真实图片/字体/样式（已本地化）
+│   └── README.md                     镜像说明与处理细节
 ├── 05-assets/
 │   ├── screens/                      真实界面截图 30 张（已重命名分类）
 │   ├── annotated/                    ⭐ 带标注的设计走查图 11 张
