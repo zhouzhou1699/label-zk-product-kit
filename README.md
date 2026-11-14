@@ -3,6 +3,9 @@
 > 对 `https://label-dev.zhongkaisk.cn/`（通用数据标注平台）的**完整产品拆解 → PRD 重构 → 设计系统 → 高保真原型 → 带标注设计图** 全流程交付物。
 > 角色视角：资深产品经理。方法：以管理员账号实际登录，走完 30 个页面、抓 61 个真实接口、59 张界面截图，结合前端 bundle 与后端版本信息交叉验证。
 
+**在线浏览**：<https://zhouzhou1699.github.io/label-zk-product-kit/> （仓库首页导航）
+**可点原型**：<https://zhouzhou1699.github.io/label-zk-product-kit/04-prototype/index.html>
+
 ---
 
 ## 一分钟看懂这个仓库
